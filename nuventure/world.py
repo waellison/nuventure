@@ -1,5 +1,7 @@
-"""
-The World class for Nuventure, and related classes.
+"""The World class for Nuventure, and related classes.
+
+William Ellison
+<waellison@gmail.com>
 """
 
 import json
@@ -7,7 +9,8 @@ import json
 
 class Node:
     def __init__(self, iname, dbinfo):
-        """Create a new map node.
+        """
+        Create a new map node.
 
         Arguments:
         iname: the internal name of the node, from the JSON file
@@ -43,7 +46,8 @@ class World:
     nodes = dict()
 
     def __init__(self, pathname="./world.json"):
-        """Create a new game world, populating its nodes.
+        """
+        Create a new game world, populating its nodes.
 
         Arguments:
         pathname: The world info JSON file to load from disk
@@ -62,7 +66,8 @@ class World:
                 print(f"\t{direction}: {edge['name']}")
 
     def try_move(self, actor, direction):
-        """Attempt to move an actor within the world.
+        """
+        Attempt to move an actor within the world.
 
         Arguments:
         actor: the actor to attempt to move
