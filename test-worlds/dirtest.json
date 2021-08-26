@@ -1,0 +1,190 @@
+{
+    "mapNodes": {
+        "ORIGIN": {
+            "friendlyName": "Home",
+            "longDescription": "You wake up in the house your parents willed you before they died.  Light filters in through the window to the east as the sun rises.  You look over your possessions one last time before picking up your rucksack and deciding to leave.  The door is open facing to the south.  A ladder on the north wall leads up to the cellar, while a ladder on the east wall leads down to the cellar.",
+            "shortDescription": "You are inside your house.  The door is open toward the west.  Ladders lead up to the attic and down to the cellar.",
+            "requiresState": null,
+            "inducesState": [
+                {
+                    "method": "healAtHome",
+                    "parms": null,
+                    "triggerAction": "enterCell",
+                    "description": "Upon entering the house, you feel a profound sense of relief.  Your HP is restored."
+                }
+            ],
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "alpha",
+                    "direction": "west",
+                    "travelDescription": "The path to the road from your house is worn smooth by many years of use and is easy to negotiate as you walk down to the road."
+                },
+                {
+                    "name": "omega",
+                    "direction": "down",
+                    "travelDescription": "You climb down the ladder to the cellar."
+                },
+                {
+                    "name": "phi",
+                    "direction": "up",
+                    "travelDescription": "You shimmy up the ladder to your attic."
+                }
+            ],
+            "itemsPresentOnLoad": [
+                "lamp"
+            ]
+        },
+        "alpha": {
+            "friendlyName": "Roadway",
+            "longDescription": "You are in the crook of a road that bows toward the west and south.  The path is smooth, the cobble worn down and packed into place by thousands of caravaners over the centuries.  To your east, behind you, is your house.",
+            "shortDescription": "You stand at the crook of a road, with paths leading west and south.  Behind you to the east is your house.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "ORIGIN",
+                    "direction": "east",
+                    "travelDescription": "You return toward the east, up the road to your house."
+                },
+                {
+                    "name": "beta",
+                    "direction": "west",
+                    "travelDescription": "You proceed west down the road toward the town gate."
+                },
+                {
+                    "name": "gamma",
+                    "direction": "south",
+                    "travelDescription": "You follow the road into the forest to your south."
+                }
+            ],
+            "itemsPresentOnLoad": null
+        },
+        "beta": {
+            "friendlyName": "Town Gate",
+            "longDescription": "You stand a few hundred feet away from the town gate to the west.  The guards are not letting anyone through.  The road extends to the south from here, and it also curves back east, where you can see your house in the distance.",
+            "shortDescription": "You are near the town gate, but the town is closed to outsiders.  The road stretches east and south.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "alpha",
+                    "direction": "east",
+                    "travelDescription": "You head west back to the crook in the road near your home."
+                },
+                {
+                    "name": "gamma",
+                    "direction": "south",
+                    "travelDescription": "You head south toward the edge of a great forest."
+                }
+            ],
+            "itemsPresentOnLoad": null
+        },
+        "gamma": {
+            "friendlyName": "Forest Edge",
+            "longDescription": "You stand at the edge of a great forest, with a road leading from west to east.  The path behind you, to your north, leads back to the town gate.  The air is warm and the sun is shining..",
+            "shortDescription": "You stand at the edge of a great forest.  A road leads east to west and also goes north, behind you.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "beta",
+                    "direction": "north",
+                    "travelDescription": "You return to the north, to the town gate."
+                },
+                {
+                    "name": "delta",
+                    "direction": "east",
+                    "travelDescription": "You head east, into the forest.."
+                },
+                {
+                    "name": "DEST",
+                    "direction": "west",
+                    "travelDescription": "You follow the road to the west, uncertain what you will find."
+                }
+            ],
+            "itemsPresentOnLoad": null
+        },
+        "delta": {
+            "friendlyName": "Forest",
+            "longDescription": "You are walking through a great forest.  The air is cool and damp and you can hear wildlife rustling through the underbrush.  The road at this juncture bears north toward the road to your house, and west toward an apparent clearing.",
+            "shortDescription": "You are walking through the forest.  The road curves north and west.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "alpha",
+                    "direction": "north",
+                    "travelDescription": "You head north back to the crook in the road near your home."
+                },
+                {
+                    "name": "gamma",
+                    "direction": "west",
+                    "travelDescription": "You take the west path and find yourself in a great clearing."
+                }
+            ],
+            "itemsPresentOnLoad": null
+        },
+        "DEST": {
+            "friendlyName": "Hill Summit",
+            "longDescription": "The path westward from the forest clearing leads to the summit of a hill.  You can see the city walls from here; looking out to the south and east, you can see the horizon as the sea meets the sky, and if you look downhill, you can see the coastline.  The road back east heads down the hill behind you.",
+            "shortDescription": "You are standing on the summit of a hill.  There is a path back to the east.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "gamma",
+                    "direction": "east",
+                    "travelDescription": "You descend the hill back toward the clearing."
+                }
+            ],
+            "itemsPresentOnLoad": [
+                "stele"
+            ]
+        }
+    },
+    "items": {
+        "lamp": {
+            "friendlyName": "Lamp",
+            "type": "lamp",
+            "inSceneDescription": "A lamp is sitting on the table by the hearth.",
+            "longDescription": "This is a rusty old oil lamp by whose light you've read many a great tale.  It would probably be a good idea to pick this up.",
+            "takeDescription": "You pick up the lamp and place it in your rucksack.",
+            "shortDescription": "This is your trusty oil lamp.",
+            "useDescription": "You advance the wick slightly and use your flint to start the lamp.",
+            "useAltDescription": "You retract the wick and smother the top of the lamp to extinguish the flame.",
+            "conferStatusOnUse": "light",
+            "stateful": true,
+            "defaultState": "off",
+            "originCell": "ORIGIN"
+        },
+        "stele": {
+            "friendlyName": "Stele",
+            "type": "activator",
+            "longDescription": "The great stone stele before you must weigh several tons and is inscribed with some strange runic writing.  With great effort, you begin to decipher the writing to see that it reads, 'Call on `arkhtos` for guidance.'",
+            "takeDescription": null,
+            "shortDescription": "This is a stone stele at the peak of a hill, which reads, 'Call on `arkhtos` for guidance.",
+            "useDescription": null,
+            "inducesState": [
+                {
+                    "method": "invokeWinCondition",
+                    "parms": null,
+                    "triggerAction": "read",
+                    "description": "A voice calls down from the heavens and, in a booming voice, cries out: 'You're Winner!'"
+                }
+            ],
+            "originCell": "DEST"
+        }
+    }
+}
