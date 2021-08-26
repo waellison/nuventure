@@ -48,3 +48,18 @@ class World:
 
             for direction, edge in self.nodes[node].neighbors.items():
                 print(f"\t{direction}: {edge['name']}")
+
+    def try_move(self, actor, direction):
+        valid_directions = {"east", "down", "up", "north", "west", "south"}
+
+        if not(direction in valid_directions):
+            return None
+        else:
+            loc = actor.location
+
+            if direction in loc.neighbors:
+                dest_node = self.nodes[loc.neighbors[direction]["name"]]
+                actor.location = dest_node
+                return True
+            else:
+                return False

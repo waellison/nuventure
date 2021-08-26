@@ -5,18 +5,15 @@ William Ellison <waellison@gmail.com>
 https://github.com/tnwae/nuventure
 """
 
-from nuventure import world
+import nuventure as nv
 
-game_world = world.World("./test-worlds/dirtest.json")
-
-present_node = game_world.nodes["ORIGIN"]
-movedp = True
-directions = {"east", "down", "up", "north", "west", "south"}
+game_world = nv.world.World("./test-worlds/dirtest.json")
+start_node = game_world.nodes["ORIGIN"]
+player = nv.actor.Actor(game_world, start_node)
 
 # TODO: The movement logic here will form the basis of the movement verb later on.
 while True:
-    if movedp:
-        print(present_node.friendly_name)
+    print(player.location.friendly_name)
 
     try:
         direction = input("> ")
@@ -25,12 +22,12 @@ while True:
 
     if direction == "quit":
         break
-    elif not(direction in directions):
-        print("bad dog")
     else:
-        if direction in present_node.neighbors:
-            present_node = game_world.nodes[present_node.neighbors[direction]["name"]]
-            movedp = True
-        else:
+        movedp = player.move(direction)
+
+        if movedp is True:
+            continue
+        elif movedp is False:
             print("Can't go that way.")
-            movedp = False
+        else:
+            print("Invalid command.")
