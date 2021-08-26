@@ -7,6 +7,12 @@ import json
 
 class Node:
     def __init__(self, iname, dbinfo):
+        """Create a new map node.
+
+        Arguments:
+        iname: the internal name of the node, from the JSON file
+        dbinfo: the information from the JSON file regarding this node
+        """
         self.internal_name = iname
         self.friendly_name = dbinfo["friendlyName"]
         self.items = []
@@ -29,6 +35,7 @@ class Node:
             }
 
     def __str__(self):
+        """Stringize a node, returning its internal name."""
         return self.internal_name
 
 
@@ -36,6 +43,11 @@ class World:
     nodes = dict()
 
     def __init__(self, pathname="./world.json"):
+        """Create a new game world, populating its nodes.
+
+        Arguments:
+        pathname: The world info JSON file to load from disk
+        """
         fh = open(pathname, "r")
         rawdata = json.load(fh)
         fh.close()
@@ -50,6 +62,12 @@ class World:
                 print(f"\t{direction}: {edge['name']}")
 
     def try_move(self, actor, direction):
+        """Attempt to move an actor within the world.
+
+        Arguments:
+        actor: the actor to attempt to move
+        direction: the direction in which to attempt to move that actor
+        """
         valid_directions = {"east", "down", "up", "north", "west", "south"}
 
         if not(direction in valid_directions):
