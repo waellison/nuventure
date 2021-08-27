@@ -43,7 +43,7 @@ class Node:
         """Stringize a node, returning its internal name."""
         return self.internal_name
 
-    def describe(self, length, statefulp=False):
+    def describe(self, length="long", statefulp=False):
         """
         Print a description of the given node.
 
