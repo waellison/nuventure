@@ -5,6 +5,7 @@ William Ellison
 """
 
 import json
+import textwrap
 
 
 class Node:
@@ -21,6 +22,7 @@ class Node:
         self.items = []
         self.neighbors = {}
         self.descriptions = {}
+        self.visitedp = False
 
         self.descriptions["long"] = dbinfo["longDescription"]
         self.descriptions["short"] = dbinfo["shortDescription"]
@@ -41,6 +43,20 @@ class Node:
         """Stringize a node, returning its internal name."""
         return self.internal_name
 
+    def describe(self, length, statefulp=False):
+        """
+        Print a description of the given node.
+
+        Arguments:
+        length: one of "long" or "short", indicating the desired length
+        statefulp: whether this is the description to be printed
+        after the required state of this node is triggered (defaults to False)
+        """
+        if statefulp is True:
+            return self.descriptions[f"{length}_stateful"]
+        else:
+            return self.descriptions[length]
+
 
 class World:
     nodes = dict()
@@ -59,12 +75,6 @@ class World:
         for key, value in rawdata["mapNodes"].items():
             self.nodes[key] = Node(key, value)
 
-        for node in self.nodes:
-            print(f"{node}'s neighbors:")
-
-            for direction, edge in self.nodes[node].neighbors.items():
-                print(f"\t{direction}: {edge['name']}")
-
     def try_move(self, actor, direction):
         """
         Attempt to move an actor within the world.
@@ -81,8 +91,10 @@ class World:
             loc = actor.location
 
             if direction in loc.neighbors:
+                travel_description = loc.neighbors[direction]["travel_description"]
                 dest_node = self.nodes[loc.neighbors[direction]["name"]]
                 actor.location = dest_node
+                print(*textwrap.wrap(travel_description, 72), sep="\n")
                 return True
             else:
                 return False
