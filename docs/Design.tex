@@ -1,0 +1,168 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{hyperref}
+\renewcommand{\abstractname}{Summary}
+\title{{\it Nuventure}: A New Interactive Fiction Engine in Python}
+\author{William Ellison\\{\tt <waellison@gmail.com>}}
+\date{August 26, 2021}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+    {\sc Nuventure} is an engine for interpreting and executing interactive fiction stories.  It uses JSON input files and is written in Python 3.  This program is being created as a project for the {\sc Nucamp} programming boot camp, in particular that institution's ``Backend with Python, SQL, and DevOps'' course.
+
+    The below is intended to be a final specification, is not intended to describe the scope of work for this course (which will be ``as much as I can complete before I have to hand it in''), and is highly subject to change.
+\end{abstract}
+
+\section{Background}
+
+For those of you unfamiliar, {\it Zork} is a text-based adventure game, a now mostly-dormant genre of game for which I've long held a certain fondness.  The idea of such a game is that you are placed into a game world that is described textually, and you interact with the game engine to perform various actions in the game world.  Further information is available at Wikipedia\footnote{\href{https://en.wikipedia.org/wiki/Colossal_Cave_Adventure}{Wikipedia: {\it Colossal Cave Adventure}}} regarding the 1977 title {\it Colossal Cave Adventure}, an early example of the genre.
+
+Each area is described in terms of its name, directions you can go in, and any items you can take or examine, along with a narrative description.  This may sound somewhat familiar to any of you familiar with "Dungeons \& Dragons," except that instead of a human playing the part of the dungeon master, the computer is the DM and it acts according to a much narrower script.
+
+\section{Scope}
+
+I want to write an engine, and a small sample game, that emulates this style of game in Python.  Basically, I plan on this being ``Zork for the Twitter generation,'' except that the game proper is of my own creation.
+
+\section{Control Flow}
+
+\subsection{In-memory representation of the game world}\label{worldGraph}
+The program will read data in that describes the game world.  This data will be expressed in terms of a graph, where the vertices denote areas where the player may go and the edges denote the permissible travel directions to get there.  (A real-world example of a graph would be a road network, where each vertex is an intersection and each edge is a lane of traffic.)  The underlying data format will be JSON, as the Python \verb!json! library is quite pleasant to use and does not require additional installation on the part of the user.
+
+The vertices of the graph will be instances\footnote{J.D. had the best off-the-cuff explanation I've yet heard of classes versus instances in object-oriented programming during our workshop on 8/21.  You can think of a class as a template for objects that exhibit a specified set of behaviors and have a specified set of attributes -- the behaviors and attributes of a person, for example.  Each person has their own eye color (my eyes are hazel), their own height (I am 177 cm tall), their own weight (110 kg), their own favorite drink (coffee), etc\ldots} of a class\footnote{\ldots but we are all instances of class Human, which is to say that we all have the same {\it characteristics} but not the same {\it value} for those characteristics.  Not everyone has hazel eyes, is 177 cm tall, weighs 110 kg, or calls coffee their favorite drink, but we all have an eye color, a height value, a weight value, and a favorite drink.} called Node, and they will be aggregated in a dictionary keyed on the name of the node to facilitate easy retrieval.  Each vertex will contain a "friendly name" (shorter than 50 characters or so), a description, a list of items at this place, and a tuple of adjacent nodes within the graph (the "neighbor list").
+
+\subsection{Traversal of the game world}
+The player may only go from one node to another if the other node's name appears in the neighbor list of the active node.  These links are only unidirectional: if node $\alpha$ has a westbound link to node $\beta$, then I may issue the verb \verb!west!\footnote{I am aware that compass directions are not verbs in the English language.} to travel from $\alpha$ to $\beta$; but if node $\beta$ does not have an eastbound link back to node $\alpha$, then I may not return to $\alpha$ directly from $\beta$.  The number of possible travel directions is bounded to the four cardinal directions plus the directions Up and Down and constant subscripts will be used to denote which link is which within the neighbor list.  This should {\it not} be modifiable after the map data is loaded from disk but {\it should} maintain order, making the Python tuple the ideal choice.  Non-traversable directions are indicated using \verb!None! while traversable directions are indicated by their internal name.
+
+\subsection{Gameplay loop}
+Upon reading in the data, the player will be initialized and placed at the origin node, which is where the gameplay loop starts.
+
+On each turn of gameplay, the player will issue a command, also called a {\it verb}, whereby they will interact with the game world.  The list of permissible verbs includes travel directions, player actions, and actions to view game state.
+
+\begin{description}
+    \item[east, west, north, south, up, down] travel directions; sends the player to the adjacent node marked with this direction, if one is defined
+    \item[view, inspect, look, examine] synonyms to examine the game world or a specific object
+    \item[dig] dig into the ground, if the player owns a digging implement and the ground is diggable at the current location
+    \item[lamp] turn on or off a lamp, if it is present in the inventory; subcommands {\bf off} and {\bf on}
+    \item[attack] given a target argument, attack an entity in the same node as the player
+    \item[cast] cast a magic spell
+    \item[speak] speak to a non-player character (NPC)
+    \item[take] take an item from the current area
+    \item[insert] place one object inside another, e.g. placing a key into a lock; requires an object and a destination
+    \item[open] opens a container
+    \item[close] closes a container
+    \item[buy] purchase an item from an NPC who sells it
+    \item[sell] sell an item to an NPC who buys it
+    \item[steal] steal an item from an NPC
+    \item[inventory] allow the player to view their inventory
+    \item[spells] allow the player to view their list of known spells
+    \item[quit] terminate execution of the game
+\end{description}
+
+The player will issue these commands to interact with the game, moving among the nodes of the game world until an ending state is achieved.  The entry of a verb by the player is considered one {\it tic}\label{gameTic}, which allows other entities in the game world to act of their own accord: NPCs may move from node to node (if not declared stationary), hostile entities may attack the player, so on and so forth.  The player's action takes priority, which is to say that it will be processed before the tic handling the rest of the game world.
+
+Permissible verbs will be held in a dictionary keyed on the verb, with each value being a function to handle this specific class of verb.  To this end, each type of verb will have a class with static methods, each of them deriving from a superclass \verb!Verb! that handles logic common to all verbs and establishes a standard control flow for all verbs consisting of a body, an optional preamble, and an optional postamble, plus an invocation method that ties the body, preamble,and postamble into one callback function; this callback function is what is invoked when parsing of the entered command completes.
+
+A verb may succeed, altering the game's state or displaying information (or both); or it may fail, generating an error message and leaving the game's state unaltered.
+
+\subsection{Termination}
+
+The game terminates in one of three cases:
+
+\begin{itemize}
+    \item The {\bf victory state} is achieved, whereupon the game is considered complete.
+    \item The {\bf loss state} is achieved, whereupon the player dies before victory is achieved.
+    \item The player exits the game using the \verb!quit! command or via the end-of-file character or a keyboard interrupt.
+\end{itemize}
+
+The player is considered to have achieved the victory state upon reaching the terminal node of the world map and performing the action there indicated, such as reading a stele, slaying a creature, or speaking to an NPC.
+
+The player is considered to have achieved the loss state if their health points value reaches zero, or if a condition resulting in instantaneous death is triggered.  (As an example, consider the famous ``You are likely to be eaten by a grue'' text from {\it Zork}.  This is triggered when you are in a dark section of cave; moving further without turning on your lamp results in being eaten by a grue and triggering that game's loss state.)
+
+The player may voluntarily terminate the game at any time by generating an interrupt (Ctrl+C), an end-of-file character (Ctrl+D), or using the \verb!quit! command.
+
+\section{Objects and Data Structures}
+
+ {\it Nuventure} maintains a variety of state objects describing the game world, objects it contains, and the state of its inhabitants.
+
+\subsection{Player object}
+
+A player object (a singleton instance of class {\tt Player}) contains the state of the player.  At minimum, this includes:
+
+\begin{itemize}
+    \item The player's name (string)
+    \item The player's location (string, subscript into the world's nodes dictionary)
+    \item The player's item inventory, consisting of zero or more items (dictionary\footnote{Yes, a dict, not a list.  Retrieval from a dict is a constant-time operation, $O(1)$, while retrieval from a list is not.})
+    \item The player's spell inventory (dictionary)
+    \item The player's active weapon (instance of class {\tt Weapon})
+    \item The player's active magic spell (instance of class {\tt Spell})
+    \item Subroutine to modify the player's HP (add to heal, subtract to injure) (instance method)
+    \item Subroutine to change the active weapon (instance method)
+    \item Subroutine to change the active spell (instance method)
+    \item Subroutines to add/remove to/from the spell and item inventories
+    \item Instance variables representing various attributes describing the character\footnote{Examples: Strength, Dexterity, Constitution, Intelligence; if you are knowledgeable of tabletop RPGs, let's collab.}
+\end{itemize}
+
+The {\tt Actor} class will be very similar to the player's class (and I may make the player's object a special instance of Actor), so I am not going to detail its member variables and methods.
+
+\subsection{World object}
+
+A world object (a singleton instance of class {\tt World}) contains the state of the game world.  At minimum, this includes:
+
+\begin{itemize}
+    \item The nodes that make up the world, as described in \S\ref{worldGraph}.  These are stored in a dictionary of {\tt Node} objects, each keyed on the internal name of the node.  As an example, in the world I am writing as sample data, I use Greek letters to refer to each node internally\footnote{Which has the neat side effect of limiting me to about 26 nodes, accounting for the reserved {\sc origin} and {\sc dest} keywords for the initial and terminal nodes.}.
+    \item A list of actors within the world, each instances of class {\tt Actor}.  These are the NPCs referred to above.  Actors may be spoken to, attacked with weapons, attacked with magic, and stolen from if there is an item in the same cell.  Each actor may be marked as mobile or stationary, and mobile actors may move per each game tic ({\it q.v.}, \S\ref{gameTic}).
+    \item A list of items within the world, each bound to a certain {\tt Node} within the map and each an instance of class {\tt Item}.  Items may be of several types (e.g., spellbooks, weapons, currency, adventuring implements, consumables).
+    \item A method implementing the game tic logic, updating actor locations and executing each actor's action upon entering their new {\tt Node}, starting with the player's action in their current node.
+\end{itemize}
+
+\subsection{Node object}
+
+The world is comprised of {\tt Node}s.  In formal terms, these nodes represent vertices in a graph\footnote{\href{https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)}{Wikipedia: Graph (discrete mathematics)}}.  In particular, the world graph is a directed graph, in which each edge (connection between vertices) has a fixed direction and each vertex represents a {\tt Node} object.  Each {\tt Node} has these attributes:
+
+\begin{itemize}
+    \item The node's internal name within the world data file, also used as the key in to the {\tt World} object's node dictionary
+    \item The node's friendly name, displayed before its description (string)
+    \item The node's description, shown to the player when the node is visited for the first time (string)
+    \item A condensed description shown to the player when the node is revisited (string)
+    \item A flag to show if the node has been visited before (Boolean)
+    \item A dictionary of adjacent nodes, keyed on the direction of permissible travel.  I was going to use tuples here, but my inner Pythonista complained until I realized dictionaries would offer the same benefit of constant-time retrieval ($O(1)$) but also allow for more than just the six travel directions (e.g. if a game author wanted to enable travel on directions other than the four cardinal compass directions, such as southeast/northwest/etc.).\footnote{The use of static constants as array indices for the sake of readability is a very typical idiom of the C language, and in some ways I still think like a C programmer.}
+\end{itemize}
+
+\subsection{Verb object}
+
+The user's vocabulary of interaction is comprised of verbs and nouns.  Prepositions and articles may be used, but they are ignored when parsing the input (so the player can say, as an example, ``{\tt attack the orc with the sword}'', but the program only sees the {\tt Verb} ``attack'', the {\tt Actor} ``orc'', and the {\tt Weapon} ``sword'').  Each verb object consists of the following:
+
+\begin{itemize}
+    \item The name of the verb, used for both identification and parsing
+    \item The type of action it represents (a constant of class {\tt Enum}\footnote{\href{https://docs.python.org/3/library/enum.html}{Python 3 documentation: class {\tt Enum}}} with members to denote movement, targeted action, self-action, and game commands)
+    \item A callback function to execute if the verb is successfully invoked
+    \item Whether the verb requires a prerequisite item (for example, turning on the lamp requires that the lamp be in the player's possession) (Boolean)
+    \item Whether the verb requires a target (for example, taking an item requires that the item be specified, etc.) (Boolean)
+    \item The bound item, if required ({\it Item} instance, {\tt None} if not required)
+    \item The bound actor, if required ({\it Actor} instance, {\tt None} if not required)
+\end{itemize}
+
+\subsection{Item object}
+
+The player's inventory consists of items, which may be used to alter game state or to interact with actors.
+
+\begin{itemize}
+    \item The name of the item, used for identification and parsing
+    \item The type of item it represents (another {\tt Enum}) with members to denote weapons, adventuring implements (e.g. shovel, lamp, etc.), adventuring consumables (e.g. lamp oil), currency, spellbooks, etc.
+    \item A callback function to execute when the item is used
+    \item Whether the item is continuously active (like an enchanted ring that provides a status buff), toggleable (like a lamp), is momentarily used but reusable (like a sword), or is used once and then consumed (like a spellbook, potion, scroll, or other consumable)
+\end{itemize}
+
+\section{Conclusion}
+
+This design document has been conceived to provide myself with a reasonable ending point for implementing {\it Nuventure}.  As I stated in the summary prefacing this document, this is not meant to be an exhaustive description of what I intend to implement, nor is it intended to be a permanent specification; it can and will change.
+
+Its \LaTeX{}\footnote{A typesetting language designed to create documents like this one from plaintext input files, pronounced ``lah-tech.''  I learned \LaTeX{} in college and used it during my bachelor's.} source will be included with the source distribution for the final project, as a part of the program's history.  You are encouraged, if you have any ideas for functionality, design recommendations, or anything else to share, to reach out to me via Slack DM or via email to {\tt <waellison@gmail.com>}.
+
+The source code for this portfolio project will be made available on GitHub, with regular commits made during the course of the project.
+
+\end{document}
