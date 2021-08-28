@@ -87,7 +87,7 @@
         },
         "gamma": {
             "friendlyName": "Forest Edge",
-            "longDescription": "You stand at the edge of a great forest, with a road leading from west to east.  The path behind you, to your north, leads back to the town gate.  The air is warm and the sun is shining..",
+            "longDescription": "You stand at the edge of a great forest, with a road leading from west to east.  The path behind you, to your north, leads back to the town gate.  The air is warm and the sun is shining.",
             "shortDescription": "You stand at the edge of a great forest.  A road leads east to west and also goes north, behind you.",
             "requiresState": null,
             "inducesState": null,

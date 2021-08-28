@@ -1,0 +1,26 @@
+{
+    "move": {
+        "aliases": [
+            "east",
+            "west",
+            "north",
+            "south",
+            "up",
+            "down"
+        ],
+        "callback": "verb_move",
+        "helptext": "Move in the specified direction."
+    },
+    "help": {
+        "callback": "verb_help",
+        "helptext": "Show this help."
+    },
+    "look": {
+        "callback": "verb_look",
+        "helptext": "Describe the current location."
+    },
+    "quit": {
+        "callback": "verb_quit",
+        "helptext": "Quits the program."
+    }
+}

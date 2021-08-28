@@ -1,8 +1,16 @@
 """Classes for Nuventure, a Python-based interactive fiction engine."""
 
-
+from nuventure.verb_callbacks import *
 import textwrap
 import json
+import sys
+
+
+valid_directions = {"east", "down", "up", "north", "west", "south"}
+
+if __name__ == "__main__":
+    print("this script is not runnable separately", file=sys.stderr)
+    sys.exit(1)
 
 
 class Node:
@@ -42,6 +50,11 @@ class Node:
     def __str__(self):
         """Returns the node's internal name."""
         return self.internal_name
+
+    def render(self, statefulp=False):
+        length = "long" if not self.visitedp else "short"
+        print(self.friendly_name)
+        print(*textwrap.wrap(self.describe(length, statefulp)), sep="\n")
 
     def describe(self, length="long", statefulp=False):
         """Prints a description of the given node.
@@ -90,8 +103,6 @@ class World:
             actor: the actor to attempt to move
             direction: the direction in which to attempt to move that actor
         """
-        valid_directions = {"east", "down", "up", "north", "west", "south"}
-
         if not(direction in valid_directions):
             return None
         else:
@@ -102,6 +113,7 @@ class World:
                 dest_node = self.nodes[loc.neighbors[direction]["name"]]
                 actor.location = dest_node
                 print(*textwrap.wrap(travel_description, 72), sep="\n")
+                print("")
                 return True
             else:
                 return False
@@ -154,11 +166,14 @@ class Actor:
             True if movement succeeded, False if not, None if the movement verb
             was invalid.
         """
-        return self.bound_world.try_move(self, direction)
+        result = self.bound_world.try_move(self, direction)
+        if result:
+            self.location.render()
+        return result
 
 
 class Verb:
-    def __init__(self, name, invokerActor, boundWorld, boundItem=None, targetActor=False):
+    def __init__(self, name, callback, helptext, invokerActor=None, boundWorld=None, boundItem=None, targetActor=False):
         """Creates a new verb object.
 
         Verbs represent permissible actions in the Nuventure engine.  A given Verb
@@ -170,16 +185,41 @@ class Verb:
         self.world = boundWorld
         self.bound_item = boundItem
         self.target = targetActor
+        self.callback = callback
+        self.helptext = helptext
 
-    def callback(self):
-        return None
+    def help(self):
+        print(f"{self.name}\t\t{self.helptext}")
 
 
 class Parser:
     def __init__(self, verbtable="./verbs.json"):
-        fh = open(verbtable, "r")
-        db = json.load(fh)
-        fh.close
+        self.verbs = {}
+        with open(verbtable, "r") as fh:
+            db = json.load(fh)
+
+        for verb, rest in db.items():
+            cbk = globals()[rest["callback"]]
+
+            if "aliases" in rest.keys():
+                for alias in rest["aliases"]:
+                    self.verbs[alias] = Verb(alias, cbk, rest["helptext"])
+            else:
+                self.verbs[verb] = Verb(verb, cbk, rest["helptext"])
+
+    def read_command(self, actor):
+        try:
+            tmp = input("> ")
+        except EOFError:
+            verb_quit()
+
+        self.current_input = tmp.split(" ", maxsplit=2)
+
+        try:
+            self.verbs[self.current_input[0]].callback(self, actor)
+        except KeyError:
+            print("command not found")
+
 
 # TODO: Start to write classes for the various verbs, all inheriting from Verb.
 # See if there is a way to reference these from the JSON.
