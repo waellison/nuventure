@@ -4,12 +4,12 @@ William Ellison <waellison@gmail.com>
 https://github.com/tnwae/nuventure
 """
 
-import nuventure
+import nuventure as nv
 import textwrap
 
-game_world = nuventure.world.World("./test-worlds/dirtest.json")
+game_world = nv.World("./test-worlds/dirtest.json")
 start_node = game_world.nodes["ORIGIN"]
-player = nuventure.actor.Actor(game_world, start_node)
+player = nv.Actor(game_world, start_node)
 
 # TODO: The movement logic here will form the basis of the movement verb later on.
 while True:
