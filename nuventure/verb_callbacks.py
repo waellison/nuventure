@@ -9,7 +9,7 @@ def verb_move(parser, actor):
 
 def verb_look(parser, actor):
     here = actor.location
-    print(*textwrap.wrap(here.describe(), 72), sep="\n")
+    here.render()
 
 
 def verb_help(parser, _):
@@ -19,11 +19,11 @@ def verb_help(parser, _):
         help_word = parser.current_input[1].split(" ")[0]
 
     if help_word:
-        print(parser.verbs[help_word]["helptext"])
+        parser.verbs[help_word].help()
     else:
         for verb in parser.verbs.values():
             verb.help()
 
 
-def verb_quit():
+def verb_quit(*args):
     sys.exit(0)

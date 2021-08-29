@@ -172,9 +172,10 @@
         "stele": {
             "friendlyName": "Stele",
             "type": "activator",
+            "inSceneDescription": "A great stone stele stands before you.",
             "longDescription": "The great stone stele before you must weigh several tons and is inscribed with some strange runic writing.  With great effort, you begin to decipher the writing to see that it reads, 'Call on `arkhtos` for guidance.'",
             "takeDescription": null,
-            "shortDescription": "This is a stone stele at the peak of a hill, which reads, 'Call on `arkhtos` for guidance.",
+            "shortDescription": null,
             "useDescription": null,
             "inducesState": [
                 {

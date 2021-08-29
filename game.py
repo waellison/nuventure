@@ -10,6 +10,7 @@ import textwrap
 game_world = nv.World("./test-worlds/dirtest.json")
 start_node = game_world.nodes["ORIGIN"]
 player = nv.Actor(game_world, start_node)
+game_world.add_actor(player)
 parser = nv.Parser()
 
 player.location.render()

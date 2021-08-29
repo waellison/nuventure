@@ -7,10 +7,31 @@ import sys
 
 
 valid_directions = {"east", "down", "up", "north", "west", "south"}
+actor_types = {"player", "npc"}
 
 if __name__ == "__main__":
     print("this script is not runnable separately", file=sys.stderr)
     sys.exit(1)
+
+
+class Item:
+    def __init__(self, iname: str, dbinfo: dict, world):
+        self.internal_name = iname
+        self.friendly_name = dbinfo["friendlyName"]
+        self.look_description = dbinfo["inSceneDescription"]
+        self.long_description = dbinfo["longDescription"]
+        self.is_inventoryable = True if dbinfo["takeDescription"] else False
+        self.mapNode = world.nodes[dbinfo["originCell"]]
+        self.owner = None
+        self.mapNode.add_item(self)
+
+    def take(self, taker):
+        if not self.is_inventoryable:
+            print(f"You cannot take the {self.friendly_name}.")
+        else:
+            taker.add_item(self)
+            self.owner = taker
+            self.mapNode = None
 
 
 class Node:
@@ -37,9 +58,6 @@ class Node:
         self.descriptions["long_stateful"] = dbinfo["longDescriptionWithState"]
         self.descriptions["short_stateful"] = dbinfo["shortDescriptionWithState"]
 
-        if(dbinfo["itemsPresentOnLoad"] != None):
-            self.items += dbinfo["itemsPresentOnLoad"]
-
         while dbinfo["linkedNodes"]:
             neighbor = dbinfo["linkedNodes"].pop()
             self.neighbors[neighbor["direction"]] = {
@@ -55,6 +73,9 @@ class Node:
         length = "long" if not self.visitedp else "short"
         print(self.friendly_name)
         print(*textwrap.wrap(self.describe(length, statefulp)), sep="\n")
+
+        for item in self.items:
+            print(item.look_description)
 
     def describe(self, length="long", statefulp=False):
         """Prints a description of the given node.
@@ -80,6 +101,9 @@ class Node:
         else:
             return self.descriptions[length]
 
+    def add_item(self, item: Item):
+        self.items.append(item)
+
 
 class World:
     def __init__(self, pathname="./world.json"):
@@ -89,12 +113,21 @@ class World:
             pathname: The world info JSON file to load from disk.
         """
         self.nodes = dict()
+        self.items = list()
         fh = open(pathname, "r")
         rawdata = json.load(fh)
         fh.close()
 
         for key, value in rawdata["mapNodes"].items():
             self.nodes[key] = Node(key, value)
+
+        for key, value in rawdata["items"].items():
+            self.items.append(Item(key, value, self))
+
+        self.actors = []
+
+    def add_actor(self, actor):
+        self.actors.append(actor)
 
     def try_move(self, actor, direction):
         """Attempts to move an actor within the world.
@@ -120,7 +153,7 @@ class World:
 
 
 class Actor:
-    def __init__(self, bound_world: World, location: Node, name="Adventurer", hp=100):
+    def __init__(self, bound_world: World, location: Node, name="Adventurer", hp=100, actor_type="player", movement_rate=1):
         """Create a new actor object.
 
         An Actor is a character entity in the game world, such as the player
@@ -133,11 +166,20 @@ class Actor:
             location: the node within the world where this actor is currently located
             name: the name of this actor (defaults to "Adventurer")
             hp: the amount of hit points to give this character (defaults to 100)
+            actor_type: the type of actor this is (player or NPC)
+            movement_rate: the actor's movement rate (defaults to 1 node per gametic)
         """
         self.name = name
         self.bound_world = bound_world
         self.location = location
         self.hit_points = hp
+
+        if actor_type in actor_types:
+            self.actor_type = actor_type
+        else:
+            raise KeyError(f"invalid actor type for actor {self.name}")
+
+        self.movement_rate = movement_rate
 
     def __str__(self):
         """Returns the actor's name."""
@@ -211,7 +253,7 @@ class Parser:
         try:
             tmp = input("> ")
         except EOFError:
-            verb_quit()
+            verb_quit(self, actor)
 
         self.current_input = tmp.split(" ", maxsplit=2)
 
@@ -219,7 +261,3 @@ class Parser:
             self.verbs[self.current_input[0]].callback(self, actor)
         except KeyError:
             print("command not found")
-
-
-# TODO: Start to write classes for the various verbs, all inheriting from Verb.
-# See if there is a way to reference these from the JSON.
