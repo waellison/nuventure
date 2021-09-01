@@ -6,14 +6,7 @@ from nltk import ne_chunk, pos_tag, word_tokenize
 from nltk.tree import Tree
 import sys
 
-directions = {
-    "east",
-    "north",
-    "south",
-    "west",
-    "up",
-    "down"
-}
+directions = {"east", "north", "south", "west", "up", "down"}
 
 simple_actions = {
     "inventory",
@@ -40,7 +33,8 @@ target_actions_no_impl = {
     "close",
     "read",
     "speak",
-    "take"
+    "take",
+    "steal"
 }
 
 target_actions_impl_first = {
@@ -48,8 +42,7 @@ target_actions_impl_first = {
     "sell",
     "cast",
     "insert",
-    "remove",
-    "steal"
+    "remove"
 }
 
 target_actions_target_first = {
@@ -92,7 +85,6 @@ def do_hard_parse(input_string):
     implement = None
     noun_candidates = []
 
-    print(entities)
     for i in entities:
         if i[1] == "VBP":
             action = f"do_{i[0]}"
@@ -101,7 +93,6 @@ def do_hard_parse(input_string):
             noun_candidates.append(i[0])
 
     # Validate input here to make sure that the implement and target are valid.
-    print("action:", action, "\tnouns:", noun_candidates)
     if len(noun_candidates) == 2:
         if verb in target_actions_impl_first:
             implement = noun_candidates[0]
@@ -111,16 +102,23 @@ def do_hard_parse(input_string):
             target = noun_candidates[0]
         else:
             # Needs moar error checking
-            return None
+            return error(verb)
     elif len(noun_candidates) == 1:
         if verb in target_actions_no_impl:
             target = noun_candidates[0]
         else:
             # Needs moar error checking
-            return None
-    print("implement:", implement)
+            return error(verb)
 
     return Verb("player", target, implement, action)
+
+
+def error(whoopsie):
+    errors = {
+        "attack": "With what, your bare hands?",
+        "unlock": "With what, a bobby pin?"
+    }
+    return errors.get(whoopsie, "Unspecified parse error")
 
 
 def input_loop():
@@ -134,6 +132,9 @@ def input_loop():
         if not in_str:
             continue
 
+        if in_str == "EXIT!":
+            sys.exit(0)
+
         verb = do_parse(in_str)
         if verb:
             print(verb)
@@ -141,4 +142,5 @@ def input_loop():
             print("Parse error")
 
 
+print("Try me!  Type 'EXIT!' to exit.")
 input_loop()
