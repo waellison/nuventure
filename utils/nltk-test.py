@@ -3,7 +3,6 @@
 NLTK provides an easy way to work with natural language input."""
 
 from nltk import ne_chunk, pos_tag, word_tokenize
-from nltk.tree import Tree
 import sys
 
 directions = {"east", "north", "south", "west", "up", "down"}
