@@ -5,7 +5,6 @@ https://github.com/tnwae/nuventure
 """
 
 import nuventure as nv
-import textwrap
 
 game_world = nv.World("./test-worlds/dirtest.json")
 start_node = game_world.nodes["ORIGIN"]
