@@ -33,6 +33,15 @@ class Item:
             self.owner = taker
             self.mapNode = None
 
+    def __str__(self):
+        return self.internal_name
+
+    def describe(self):
+        return self.long_description
+
+    def render(self):
+        return self.look_description
+
 
 class Node:
     def __init__(self, iname: str, dbinfo: dict):
