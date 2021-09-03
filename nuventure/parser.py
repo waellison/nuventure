@@ -124,7 +124,7 @@ class Parser:
             do_quit()
 
         action = self.do_parse(tmp)
-        if type(action) is Verb:
+        if isinstance(action, Verb):
             action.invoker = actor
         else:
             action = None
