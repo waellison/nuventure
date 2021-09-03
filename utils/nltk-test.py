@@ -33,7 +33,8 @@ target_actions_no_impl = {
     "read",
     "speak",
     "take",
-    "steal"
+    "steal",
+    "drop"
 }
 
 target_actions_impl_first = {
@@ -92,7 +93,18 @@ def do_hard_parse(input_string):
             noun_candidates.append(i[0])
 
     # Validate input here to make sure that the implement and target are valid.
-    if len(noun_candidates) == 2:
+    if verb == "turn":
+        if entities[2][0] == "on":
+            action = "do_lamp_activate"
+            target = "lamp"
+            implement = None
+        elif entities[2][0] == "off":
+            action = "do_lamp_deactivate"
+            target = "lamp"
+            implement = None
+        else:
+            return error(verb)
+    elif len(noun_candidates) == 2:
         if verb in target_actions_impl_first:
             implement = noun_candidates[0]
             target = noun_candidates[1]
