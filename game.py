@@ -4,19 +4,22 @@ William Ellison <waellison@gmail.com>
 https://github.com/tnwae/nuventure
 """
 
-import nuventure as nv
+from nuventure.world import World
+from nuventure.actor import Actor
+from nuventure.parser import Parser, Verb
 
-game_world = nv.World("./test-worlds/dirtest.json")
+game_world = World("./test-worlds/dirtest.json")
 start_node = game_world.nodes["ORIGIN"]
-player = nv.Actor(game_world, start_node)
+player = Actor(game_world, start_node)
 game_world.add_actor(player)
-parser = nv.Parser()
-
+parser = Parser()
 player.location.render()
 
-# TODO: The movement logic here will form the basis of the movement verb later on.
 while True:
-    # We can assume wolog that the current location has been visited.
     player.location.visitedp = True
     print("")
-    parser.read_command(player)
+    verb = parser.read_command(player)
+    if verb:
+        verb.invoke()
+    else:
+        print(verb)
