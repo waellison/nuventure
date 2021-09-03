@@ -2,7 +2,7 @@ from typing import Callable
 from nuventure.actor import Actor
 from nltk import ne_chunk, pos_tag, word_tokenize
 import json
-from nuventure.verb_callbacks import do_quit
+from nuventure.verb_callbacks import *
 
 _verb_prefix = "do_"
 
@@ -131,11 +131,30 @@ class Parser:
         return action
 
     def do_parse(self, input_string):
+        if input_string.split()[0] == "help":
+            return self.do_help(input_string)
+
         if input_string in simple_actions:
             return self.verbs[input_string]
 
         input_string = "I " + input_string
         return self.do_hard_parse(input_string)
+
+    def do_help(self, in_str):
+        tokens = in_str.split(" ", maxsplit=2)
+        help_word = None
+
+        if len(tokens) > 1:
+            help_word = tokens[1]
+
+        if help_word:
+            try:
+                self.verbs[help_word].help()
+            except KeyError:
+                print(f"nonexistent command \"{help_word}\"")
+        else:
+            for verb in self.verbs.values():
+                verb.help()
 
     def do_hard_parse(self, input_string):
         entities = ne_chunk(pos_tag(word_tokenize(input_string)))

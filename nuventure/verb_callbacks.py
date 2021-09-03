@@ -52,19 +52,5 @@ def do_inventory(actor: Actor, *_):
         print(item.short_render())
 
 
-"""
-def do_help(parser, _):
-    help_word = ""
-    if len(parser.current_input) > 1:
-        help_word = parser.current_input[1].split(" ")[0]
-
-    if help_word:
-        parser.verbs[help_word].help()
-    else:
-        for verb in parser.verbs.values():
-            verb.help()
-"""
-
-
 def do_quit(*_):
     sys.exit(0)
