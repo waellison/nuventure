@@ -1,7 +1,4 @@
-from nuventure.item import Item
-from nuventure.world import World
 from nuventure.actor import Actor
-import textwrap
 import sys
 
 
