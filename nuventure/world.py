@@ -1,6 +1,4 @@
 from nuventure.item import Item
-from nuventure import directions
-
 import textwrap
 import json
 
