@@ -69,8 +69,10 @@ class Actor:
     def add_item(self, item: Item):
         self.inventory[item.internal_name] = item
 
-    def remove_item(self, item: Item):
+    def drop_item(self, item: Item):
         if self.inventory.get(item.internal_name):
-            item.drop()
+            item.drop(self)
+            print(
+                f"You remove the f{item.friendly_name} from your pack and set it aside.")
             del self.inventory[item.internal_name]
             return f"Dropped {item.internal_name}."

@@ -83,8 +83,8 @@ class World:
         Args:
             pathname: The world info JSON file to load from disk.
         """
-        self.nodes = dict()
-        self.items = list()
+        self.nodes = {}
+        self.items = {}
         fh = open(pathname, "r")
         rawdata = json.load(fh)
         fh.close()
@@ -93,7 +93,7 @@ class World:
             self.nodes[key] = Node(key, value)
 
         for key, value in rawdata["items"].items():
-            self.items.append(Item(key, value, self))
+            self.items[key] = Item(key, value, self)
 
         self.actors = []
 
