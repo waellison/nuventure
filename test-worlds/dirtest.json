@@ -158,7 +158,7 @@
         "lamp": {
             "friendlyName": "Lamp",
             "type": "lamp",
-            "inSceneDescription": "A lamp is sitting on the table by the hearth.",
+            "inSceneDescription": "There is a rusty oil lamp sitting here.",
             "longDescription": "This is a rusty old oil lamp by whose light you've read many a great tale.  It would probably be a good idea to pick this up.",
             "takeDescription": "You pick up the lamp and place it in your rucksack.",
             "shortDescription": "This is your trusty oil lamp.",
