@@ -2,7 +2,7 @@ from typing import Callable
 from nuventure.actor import Actor
 from nltk import ne_chunk, pos_tag, word_tokenize
 import json
-from nuventure.verb_callbacks import *
+from nuventure.verb_callbacks import do_quit
 
 _verb_prefix = "do_"
 
