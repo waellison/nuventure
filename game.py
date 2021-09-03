@@ -18,8 +18,10 @@ player.location.render()
 while True:
     player.location.visitedp = True
     print("")
-    verb = parser.read_command(player)
+    try:
+        verb = parser.read_command(player)
+    except NotImplementedError:
+        print("this action is not implemented yet")
+        verb = None
     if verb:
         verb.invoke()
-    else:
-        print(verb)
