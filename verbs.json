@@ -8,19 +8,20 @@
             "up",
             "down"
         ],
-        "callback": "verb_move",
-        "helptext": "Move in the specified direction."
+        "helptext": "Move in the specified direction.",
+        "errortext": "Can't go that way."
     },
     "help": {
-        "callback": "verb_help",
-        "helptext": "Show this help."
+        "helptext": "Show this help.",
+        "errortext": null
     },
     "look": {
-        "callback": "verb_look",
-        "helptext": "Describe the current location."
+        "helptext": "Describe the current location.",
+        "errortext": "You can't see anything!"
     },
     "quit": {
         "callback": "verb_quit",
-        "helptext": "Quits the program."
+        "helptext": "Quits the program.",
+        "errortext": null
     }
 }
