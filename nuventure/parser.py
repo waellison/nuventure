@@ -146,7 +146,10 @@ class Parser:
 
         for i in entities:
             if i[1] == "VBP":
-                action = f"do_{i[0]}"
+                try:
+                    action = globals()[f"do_{i[0]}"]
+                except:
+                    raise NotImplementedError(f"unimplemented action {i[0]}")
                 verb = i[0]
             elif i[1] == "NN" or i[1] == "JJ":
                 noun_candidates.append(i[0])
@@ -154,11 +157,11 @@ class Parser:
         # Validate input here to make sure that the implement and target are valid.
         if verb == "turn":
             if entities[2][0] == "on":
-                action = "do_lamp_activate"
+                action = globals()["do_lamp_activate"]
                 target = "lamp"
                 implement = None
             elif entities[2][0] == "off":
-                action = "do_lamp_deactivate"
+                action = globals()["do_lamp_deactivate"]
                 target = "lamp"
                 implement = None
             else:
@@ -180,10 +183,14 @@ class Parser:
                 # Needs moar error checking
                 return self.error(verb)
 
-        return Verb("player", target, implement, action)
+        retval = Verb(verb, None, None, None)
+        retval.target = target
+        retval.bound_item = implement
+        retval.callback = action
+        return retval
 
-    def error(self, whoopsie: Verb):
-        if whoopsie.errortext:
-            return whoopsie.errortext
+    def error(self, whoopsie: str):
+        if self.verbs[whoopsie].errortext:
+            return self.verbs[whoopsie].errortext
         else:
             return "Unspecified error"

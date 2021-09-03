@@ -35,8 +35,24 @@ def do_look(actor: Actor, *_):
 
 def do_take(actor: Actor, target, _):
     here = actor.location
-    if target in here.items:
-        target.take(actor)
+    target_itm = actor.bound_world.items[target]
+    if target_itm in here.items:
+        target_itm.take(actor)
+
+
+def do_drop(actor: Actor, target, _):
+    try:
+        target_itm = actor.inventory[target]
+    except KeyError:
+        print(Parser.error("drop"))
+        return
+    target_itm.drop(actor)
+
+
+def do_inventory(actor: Actor, *_):
+    print("\nYour Inventory:")
+    for item in actor.inventory.values():
+        print(item.short_render())
 
 
 """

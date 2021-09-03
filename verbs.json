@@ -20,8 +20,19 @@
         "errortext": "You can't see anything!"
     },
     "quit": {
-        "callback": "verb_quit",
         "helptext": "Quits the program.",
         "errortext": null
+    },
+    "take": {
+        "helptext": "Put the specified object in the inventory.",
+        "errortext": "There's nothing to take."
+    },
+    "drop": {
+        "helptext": "Drop the specified item from the inventory.",
+        "errortext": "You can't drop something you don't have."
+    },
+    "inventory": {
+        "helptext": "View your inventory.",
+        "errortext": "You have no items."
     }
 }
