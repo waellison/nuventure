@@ -6,7 +6,7 @@ https://github.com/tnwae/nuventure
 
 from nuventure.world import World
 from nuventure.actor import Actor
-from nuventure.parser import Parser, Verb
+from nuventure.parser import Parser
 
 game_world = World("./test-worlds/dirtest.json")
 start_node = game_world.nodes["ORIGIN"]
