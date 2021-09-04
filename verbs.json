@@ -19,6 +19,10 @@
         "helptext": "Describe the current location.",
         "errortext": "You can't see anything!"
     },
+    "inspect": {
+        "helptext": "Inspect the specified item.",
+        "errortext": "You can't inspect what you can't see!"
+    },
     "quit": {
         "helptext": "Quits the program.",
         "errortext": null
