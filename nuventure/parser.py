@@ -1,5 +1,5 @@
 from typing import Callable
-from nuventure.actor import Actor
+from nuventure.actor import NVActor
 from nltk import ne_chunk, pos_tag, word_tokenize
 import json
 from nuventure.verb_callbacks import *
@@ -25,7 +25,7 @@ simple_actions = {
 }
 
 target_actions_no_impl = {
-    "examine",
+    "inspect",
     "cast",
     "open",
     "close",
@@ -54,8 +54,8 @@ all_verbs = simple_actions | target_actions_target_first \
     | target_actions_impl_first | target_actions_no_impl
 
 
-class Verb:
-    def __init__(self, name: str, callback: Callable[[Actor, any, any], None],
+class NVVerb:
+    def __init__(self, name: str, callback: Callable[[NVActor, any, any], None],
                  helptext: str, errortext: str, source=None, implement=None,
                  targetActor=None):
         """Creates a new verb object.
@@ -87,9 +87,10 @@ class Verb:
             return f"{self.invoker} invokes {self.callback}"
 
 
-class Parser:
+class NVParser:
     def __init__(self, verbtable="./verbs.json"):
         self.verbs = {}
+        self.last_command = ""
         with open(verbtable, "r") as fh:
             db = json.load(fh)
 
@@ -107,7 +108,7 @@ class Parser:
                         aname = _verb_prefix + alias
                         if aname in globals():
                             cbk = globals()[aname]
-                            self.verbs[alias] = Verb(
+                            self.verbs[alias] = NVVerb(
                                 alias, cbk, helptext, errtext)
                         else:
                             raise NotImplementedError(f"need to write {aname}")
@@ -115,16 +116,18 @@ class Parser:
                         raise RuntimeError(
                             f"Catastrophic failure (cannot add nonexistent verb \"{alias}\"")
             else:
-                self.verbs[verb] = Verb(verb, cbk, helptext, errtext)
+                self.verbs[verb] = NVVerb(verb, cbk, helptext, errtext)
 
     def read_command(self, actor):
         try:
             tmp = input("> ")
         except EOFError:
             do_quit()
+        else:
+            self.last_command = tmp
 
         action = self.do_parse(tmp)
-        if isinstance(action, Verb):
+        if isinstance(action, NVVerb):
             action.invoker = actor
         else:
             action = None
@@ -202,7 +205,7 @@ class Parser:
                 # Needs moar error checking
                 return self.error(verb)
 
-        retval = Verb(verb, None, None, None)
+        retval = NVVerb(verb, None, None, None)
         retval.target = target
         retval.bound_item = implement
         retval.callback = action

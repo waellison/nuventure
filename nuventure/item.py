@@ -1,4 +1,7 @@
-class Item:
+import textwrap
+
+
+class NVItem:
     def __init__(self, iname: str, dbinfo: dict, world):
         self.internal_name = iname
         self.friendly_name = dbinfo["friendlyName"]
@@ -31,7 +34,7 @@ class Item:
         return self.long_description
 
     def render(self):
-        return self.look_description
+        print(*textwrap.wrap(self.describe(), width=72), sep="\n")
 
     def short_render(self):
         return self.friendly_name

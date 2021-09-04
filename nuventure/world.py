@@ -1,9 +1,10 @@
-from nuventure.item import Item
+from nuventure.item import NVItem
 import textwrap
 import json
+import random
 
 
-class Node:
+class NVWorldNode:
     def __init__(self, iname: str, dbinfo: dict):
         """Create a new map node.
 
@@ -38,8 +39,17 @@ class Node:
         """Returns the node's internal name."""
         return self.internal_name
 
-    def render(self, statefulp=False):
-        length = "long" if not self.visitedp else "short"
+    def render(self, longp=False, statefulp=False):
+        """Print an appropriate description of the given node.
+
+        If the node is marked as visited, then we want the brief description,
+        else we want the long one, and in all cases we want the items in the
+        scene.
+
+        Args:
+            statefulp: True if the description should be the one triggered by
+                the required state, False otherwise."""
+        length = "long" if longp or not self.visitedp else "short"
         print(self.friendly_name)
         print(*textwrap.wrap(self.describe(length, statefulp)), sep="\n")
 
@@ -70,11 +80,15 @@ class Node:
         else:
             return self.descriptions[length]
 
-    def add_item(self, item: Item):
+    def add_item(self, item: NVItem):
+        """Adds an item to the given node.
+
+        Args:
+            item: the item to add"""
         self.items.append(item)
 
 
-class World:
+class NVWorld:
     def __init__(self, pathname="./world.json"):
         """Creates a new game world, populating its nodes.
 
@@ -88,14 +102,19 @@ class World:
         fh.close()
 
         for key, value in rawdata["mapNodes"].items():
-            self.nodes[key] = Node(key, value)
+            self.nodes[key] = NVWorldNode(key, value)
 
         for key, value in rawdata["items"].items():
-            self.items[key] = Item(key, value, self)
+            self.items[key] = NVItem(key, value, self)
 
         self.actors = []
+        self.parser = None
 
     def add_actor(self, actor):
+        """Adds an actor to the world.
+
+        Args:
+            actor: the Actor object to add"""
         self.actors.append(actor)
 
     def try_move(self, actor, direction):
@@ -116,3 +135,20 @@ class World:
             return True
         else:
             return False
+
+    def do_world_tic(self):
+        """Do a tic within the world.
+
+        For each gametic, actors may move the number of nodes specified by
+        their movement rate.  Movement direction is randomly chosen per move.
+        """
+        for actor in self.actors:
+            if actor.actor_types is "player":
+                continue
+
+            for _ in range(0, actor.movement_rate):
+                directions = actor.location.neighbors.keys()
+                thisway = random.choice(directions)
+                movement = self.parser.verbs[thisway]
+                movement.invoker = actor
+                movement.invoke()

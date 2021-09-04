@@ -1,11 +1,11 @@
-from nuventure.world import World, Node
-from nuventure.item import Item
+from nuventure.world import NVWorld, NVWorldNode
+from nuventure.item import NVItem
 
 actor_types = {"player", "npc"}
 
 
-class Actor:
-    def __init__(self, bound_world: World, location: Node, name="Adventurer", hp=100, actor_type="player", movement_rate=1):
+class NVActor:
+    def __init__(self, bound_world: NVWorld, location: NVWorldNode, name="Adventurer", hp=100, actor_type="player", movement_rate=1):
         """Create a new actor object.
 
         An Actor is a character entity in the game world, such as the player
@@ -62,17 +62,27 @@ class Actor:
             was invalid.
         """
         result = self.bound_world.try_move(self, direction)
-        if result:
+        if result and self.actor_type == "player":
             self.location.render()
         return result
 
-    def add_item(self, item: Item):
+    def add_item(self, item: NVItem):
+        """Add an item to the player's inventory.
+
+        Args:
+            item: the item to add to the inventory
+        """
         self.inventory[item.internal_name] = item
 
-    def drop_item(self, item: Item):
+    def drop_item(self, item: NVItem):
+        """Remove an item from the player's inventory and drop it at the
+        current map node.
+
+        Args:
+            item: the item to drop"""
         if self.inventory.get(item.internal_name):
             item.drop(self)
             print(
-                f"You remove the f{item.friendly_name} from your pack and set it aside.")
+                f"You remove the {item.friendly_name} from your pack and set it aside.")
             del self.inventory[item.internal_name]
             return f"Dropped {item.internal_name}."
