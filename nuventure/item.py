@@ -17,7 +17,6 @@ class NVItem:
             print(f"You cannot take the {self.friendly_name}.")
         else:
             print(self.take_description)
-            taker.add_item(self)
             self.owner = taker
             self.map_node.items.remove(self)
             self.map_node = None

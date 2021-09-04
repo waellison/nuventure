@@ -21,6 +21,11 @@ class NVGame:
         while True:
             self._do_input_loop()
 
+    def _do_parse_error(self):
+        last = self.parser.last_command
+        if len(last):
+            self.parser.error(last.split(" ")[0])
+
     def _do_input_loop(self):
         self.player.location.visitedp = True
         print("")
@@ -32,4 +37,10 @@ class NVGame:
         except (KeyboardInterrupt, EOFError):
             do_quit()
         else:
-            verb.invoke()
+            if verb:
+                result = verb.invoke()
+            else:
+                result = False
+
+            if not result:
+                self._do_parse_error()

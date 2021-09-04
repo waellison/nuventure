@@ -76,7 +76,9 @@ class NVVerb:
         return self.callback(self.invoker, self.target, self.bound_item)
 
     def help(self):
-        print(f"{self.name}\t\t{self.helptext}")
+        # Don't give away the cheat codes (which have no helptext obviously)
+        if self.helptext:
+            print(f"{self.name}\t\t{self.helptext}")
 
     def __str__(self):
         if self.target and self.bound_item:
@@ -214,7 +216,8 @@ class NVParser:
         return retval
 
     def error(self, whoopsie: str):
-        if self.verbs[whoopsie].errortext:
-            return self.verbs[whoopsie].errortext
+        verb = self.verbs.get(whoopsie, None)
+        if verb:
+            print(verb.errortext)
         else:
-            return "Unspecified error"
+            print("Unspecified error")

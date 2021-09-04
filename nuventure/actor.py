@@ -72,7 +72,12 @@ class NVActor:
         Args:
             item: the item to add to the inventory
         """
-        self.inventory[item.internal_name] = item
+        if item:
+            item.take(self)
+            self.inventory[item.internal_name] = item
+            return True
+        else:
+            return False
 
     def drop_item(self, item: NVItem):
         """Remove an item from the player's inventory and drop it at the
@@ -85,4 +90,6 @@ class NVActor:
             print(
                 f"You remove the {item.friendly_name} from your pack and set it aside.")
             del self.inventory[item.internal_name]
-            return f"Dropped {item.internal_name}."
+            return True
+        else:
+            return False

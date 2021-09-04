@@ -129,8 +129,6 @@ class NVWorld:
         if direction in loc.neighbors:
             dest_node = self.nodes[loc.neighbors[direction]["name"]]
             actor.location = dest_node
-            if actor.actor_type == "player":
-                actor.location.render()
             return True
         else:
             return False
