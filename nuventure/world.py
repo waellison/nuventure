@@ -127,11 +127,10 @@ class NVWorld:
         loc = actor.location
 
         if direction in loc.neighbors:
-            travel_description = loc.neighbors[direction]["travel_description"]
             dest_node = self.nodes[loc.neighbors[direction]["name"]]
             actor.location = dest_node
-            print(*textwrap.wrap(travel_description, 72), sep="\n")
-            print("")
+            if actor.actor_type == "player":
+                actor.location.render()
             return True
         else:
             return False
@@ -143,7 +142,7 @@ class NVWorld:
         their movement rate.  Movement direction is randomly chosen per move.
         """
         for actor in self.actors:
-            if actor.actor_types is "player":
+            if actor.actor_types == "player":
                 continue
 
             for _ in range(0, actor.movement_rate):
