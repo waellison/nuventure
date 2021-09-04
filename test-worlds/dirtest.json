@@ -56,7 +56,7 @@
                     "travelDescription": "You proceed west down the road toward the town gate."
                 },
                 {
-                    "name": "gamma",
+                    "name": "delta",
                     "direction": "south",
                     "travelDescription": "You follow the road into the forest to your south."
                 }
