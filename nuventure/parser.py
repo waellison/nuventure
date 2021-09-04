@@ -134,6 +134,8 @@ class NVParser:
         return action
 
     def do_parse(self, input_string):
+        if len(input_string) == 0:
+            return None
         if input_string.split()[0] == "help":
             return self.do_help(input_string)
 
@@ -173,7 +175,7 @@ class NVParser:
                 except:
                     raise NotImplementedError(f"unimplemented action {i[0]}")
                 verb = i[0]
-            elif i[1] == "NN" or i[1] == "JJ":
+            elif i[1] in {"NN", "JJ", "NNS"}:
                 noun_candidates.append(i[0])
 
         # Validate input here to make sure that the implement and target are valid.
