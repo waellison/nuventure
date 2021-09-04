@@ -38,5 +38,9 @@
     "inventory": {
         "helptext": "View your inventory.",
         "errortext": "You have no items."
+    },
+    "arkhtos": {
+        "helptext": null,
+        "errortext": "Stop trying to cheat."
     }
 }
