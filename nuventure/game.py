@@ -16,6 +16,11 @@ from nuventure.verb_callbacks import do_quit
 
 
 class NVGame:
+    """
+    NVGame is a singleton class for running the Nuventure engine.
+    It runs the input loop and handles some outlier parse errors.
+    """
+
     def __init__(self, path):
         self.world = NVWorld(path)
         self.start_node = self.world.nodes["ORIGIN"]
