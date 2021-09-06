@@ -6,5 +6,5 @@ https://github.com/tnwae/nuventure
 
 from nuventure.game import NVGame
 
-game = NVGame("./test-worlds/dirtest.json")
-game.run()
+GAME = NVGame("./test-worlds/dirtest.json")
+GAME.run()
