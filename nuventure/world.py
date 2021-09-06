@@ -1,16 +1,29 @@
-from nuventure.item import NVItem
+"""World module for Nuventure, a poor man's implementation of ScummVM.
+
+https://github.com/tnwae/nuventure
+
+Copyright (c) 2021 by William Ellison.
+<waellison@gmail.com>
+
+Nuventure is licensed under the terms of the MIT License, furnished
+in the LICENSE file at the root directory of this distribution.
+"""
+
 import textwrap
 import json
 import random
+from nuventure.item import NVItem
 
 
 class NVWorldNode:
+    """
+    A map node is a point on the map to which an Actor may travel.
+    Nodes contain various internal state including a list of neighbor
+    nodes, which in technical terms is a directed graph.
+    """
+
     def __init__(self, iname: str, dbinfo: dict):
         """Create a new map node.
-
-        A map node is a point on the map to which an Actor may travel.
-        Nodes contain various internal state including a list of neighbor
-        nodes, which in technical terms is a directed graph.
 
         Args:
             iname: the internal name of the node, from the JSON file
