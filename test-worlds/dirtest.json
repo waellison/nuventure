@@ -36,6 +36,41 @@
                 "lamp"
             ]
         },
+        "phi": {
+            "friendlyName": "Attic",
+            "longDescription": "You look around the attic of your house.  There isn't much left here, just a few empty crates that used to store fabric and food.  The air is musty and warm, and you start to sweat.",
+            "shortDescription": "You are in the attic of your house.  A ladder leads downstairs to the main room.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "ORIGIN",
+                    "direction": "down",
+                    "travelDescription": "You easily descend the ladder back to the main room of your house."
+                }
+            ],
+            "itemsPresentOnLoad": [
+                "sword"
+            ]
+        },
+        "omega": {
+            "friendlyName": "Cellar",
+            "longDescription": "You look around the cellar of your house.  It is cold, damp, and dark, and the cellar is packed with crates and boxes.",
+            "shortDescription": "You are in the cellar of your house.  A ladder leads upstairs to the main room.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "ORIGIN",
+                    "direction": "up",
+                    "travelDescription": "You scale the ladder back to the main room of your house."
+                }
+            ]
+        },
         "alpha": {
             "friendlyName": "Roadway",
             "longDescription": "You are in the crook of a road that bows toward the west and south.  The path is smooth, the cobble worn down and packed into place by thousands of caravaners over the centuries.  To your east, behind you, is your house.",
@@ -102,7 +137,7 @@
                 {
                     "name": "delta",
                     "direction": "east",
-                    "travelDescription": "You head east, into the forest.."
+                    "travelDescription": "You head east, into the forest."
                 },
                 {
                     "name": "DEST",
@@ -169,6 +204,30 @@
             "defaultState": "off",
             "originCell": "ORIGIN"
         },
+        "sword": {
+            "friendlyName": "Sword",
+            "type": "weapon",
+            "inSceneDescription": "There is a sword lying here in its scabbard.",
+            "longDescription": "This is a simple steel longsword your father used to carry when he served in the King's Army.  The handle is wrapped in leather and the sword itself is housed in a simple scabbard.",
+            "takeDescription": "You pick up the sword and fasten it to your belt.",
+            "shortDescription": "This is your father's old sword.",
+            "useDescription": "You draw the sword from its scabbard and ready yourself to attack.",
+            "useAltDescription": null,
+            "inducesState": [
+                {
+                    "method": "_do_damage",
+                    "parms": {
+                        "damage_target": "{0}",
+                        "damage_amount": 10
+                    },
+                    "triggerAction": "attack",
+                    "description": "You swing your sword at the {0}!"
+                }
+            ],
+            "stateful": false,
+            "defaultState": null,
+            "originCell": "phi"
+        },
         "stele": {
             "friendlyName": "Stele",
             "type": "activator",
@@ -177,11 +236,12 @@
             "takeDescription": null,
             "shortDescription": null,
             "useDescription": null,
+            "useAltDescription": null,
             "inducesState": [
                 {
-                    "method": "invokeWinCondition",
+                    "method": "do_arkhtos",
                     "parms": null,
-                    "triggerAction": "read",
+                    "triggerAction": "arkhtos",
                     "description": "A voice calls down from the heavens and, in a booming voice, cries out: 'You're Winner!'"
                 }
             ],
