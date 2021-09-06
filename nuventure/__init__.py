@@ -11,8 +11,11 @@ in the LICENSE file at the root directory of this distribution.
 
 import sys
 
-
+"""The permissible directions of travel within the Nuventure engine."""
 DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
+
+"""The default error string for parse errors."""
+ERROR_STR = "Huh?"
 
 if __name__ == "__main__":
     print("this script is not runnable separately", file=sys.stderr)
