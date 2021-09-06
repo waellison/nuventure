@@ -57,9 +57,13 @@ def do_drop(actor: NVActor, target, _):
 
 
 def do_inventory(actor: NVActor, *_):
-    print("\nYour Inventory:")
-    for item in actor.inventory.values():
-        print(item.short_render())
+    if len(actor.inventory):
+        print("\nYour Inventory:")
+        for item in actor.inventory.values():
+            print(item.short_render())
+        return True
+
+    return False
 
 
 def do_arkhtos(*_):

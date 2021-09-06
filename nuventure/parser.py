@@ -7,47 +7,22 @@ from nuventure.verb_callbacks import *
 _verb_prefix = "do_"
 
 simple_actions = {
-    "inventory",
-    "look",
-    "east",
-    "north",
-    "south",
-    "west",
-    "up",
-    "down",
-    "quit",
-    "dig",
-    "help",
-    "iddqd",
-    "xyzzy",
-    "idkfa",
-    "arkhtos"
+    "inventory", "look", "east", "north", "south",
+    "west", "up", "down", "quit", "dig", "help",
+    "iddqd", "xyzzy", "idkfa", "arkhtos"
 }
 
 target_actions_no_impl = {
-    "inspect",
-    "cast",
-    "open",
-    "close",
-    "read",
-    "speak",
-    "take",
-    "steal",
-    "drop"
+    "inspect", "cast", "open", "close", "read",
+    "speak", "take", "steal", "drop"
 }
 
 target_actions_impl_first = {
-    "buy",
-    "sell",
-    "cast",
-    "insert",
-    "remove"
+    "buy", "sell", "cast", "insert", "remove"
 }
 
 target_actions_target_first = {
-    "attack",
-    "lock",
-    "unlock"
+    "attack", "lock", "unlock"
 }
 
 all_verbs = simple_actions | target_actions_target_first \
@@ -138,7 +113,12 @@ class NVParser:
     def do_parse(self, input_string):
         if len(input_string) == 0:
             return None
-        if input_string.split()[0] == "help":
+
+        bareword = input_string.split()[0]
+        if not bareword in all_verbs:
+            return None
+
+        if bareword == "help":
             return self.do_help(input_string)
 
         if input_string in simple_actions:
