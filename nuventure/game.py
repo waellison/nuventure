@@ -1,6 +1,14 @@
+"""Driver module for Nuventure, a poor man's implementation of ScummVM.
+
+https://github.com/tnwae/nuventure
+
+Copyright (c) 2021 by William Ellison.
+<waellison@gmail.com>
+
+Nuventure is licensed under the terms of the MIT License, furnished
+in the LICENSE file at the root directory of this distribution.
 """
 
-"""
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
 from nuventure.parser import NVParser
@@ -16,17 +24,22 @@ class NVGame:
         self.parser = NVParser()
 
     def run(self):
+        """Run the game by rendering the player's starting location
+        and then starting the input loop.
+        """
         self.player.location.render()
 
         while True:
             self._do_input_loop()
 
     def _do_parse_error(self):
+        """Issue a parse error."""
         last = self.parser.last_command
-        if len(last):
+        if not last:
             self.parser.error(last.split(" ")[0])
 
     def _do_input_loop(self):
+        """Accept input from the user and process it."""
         self.player.location.visitedp = True
         print("")
 
