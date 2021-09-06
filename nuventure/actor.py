@@ -1,18 +1,31 @@
+"""Actor module for Nuventure, a poor man's implementation of ScummVM.
+
+https://github.com/tnwae/nuventure
+
+Copyright (c) 2021 by William Ellison.
+<waellison@gmail.com>
+
+Nuventure is licensed under the terms of the MIT License, furnished
+in the LICENSE file at the root directory of this distribution.
+"""
+
+import textwrap
 from nuventure.world import NVWorld, NVWorldNode
 from nuventure.item import NVItem
-import textwrap
 
-actor_types = {"player", "npc"}
+ACTOR_TYPES = {"player", "npc"}
 
 
 class NVActor:
+    """
+    An Actor is a character entity in the game world, such as the player
+    or an NPC.  An Actor is bound to the world that it occupies and
+    to the node it currently occupies within that world, as of the
+    current gametic.
+    """
+
     def __init__(self, bound_world: NVWorld, location: NVWorldNode, name="Adventurer", hp=100, actor_type="player", movement_rate=1):
         """Create a new actor object.
-
-        An Actor is a character entity in the game world, such as the player
-        or an NPC.  An Actor is bound to the world that it occupies and
-        to the node it currently occupies within that world, as of the
-        current gametic.
 
         Args:
             bound_world: the world object to which this actor is bound
@@ -28,7 +41,7 @@ class NVActor:
         self.hit_points = hp
         self.inventory = {}
 
-        if actor_type in actor_types:
+        if actor_type in ACTOR_TYPES:
             self.actor_type = actor_type
         else:
             raise KeyError(f"invalid actor type for actor {self.name}")
@@ -45,8 +58,10 @@ class NVActor:
         Arguments:
             amount: the amount by which to reduce the actor's
                 health (defaults to 5)
-        """
+
+        Returns True if the actor is dead, False otherwise."""
         self.hit_points -= amount
+        return self.is_dead()
 
     def is_dead(self):
         """Returns whether the character is dead."""
@@ -60,8 +75,7 @@ class NVActor:
 
         Returns:
             True if movement succeeded, False if not, None if the movement verb
-            was invalid.
-        """
+            was invalid."""
         prev_loc = self.location
         result = self.bound_world.try_move(self, direction)
         if result and self.actor_type == "player":
@@ -75,14 +89,13 @@ class NVActor:
         """Add an item to the player's inventory.
 
         Args:
-            item: the item to add to the inventory
-        """
+            item: the item to add to the inventory"""
         if item:
             item.take(self)
             self.inventory[item.internal_name] = item
             return True
-        else:
-            return False
+
+        return False
 
     def drop_item(self, item: NVItem):
         """Remove an item from the player's inventory and drop it at the
@@ -96,5 +109,5 @@ class NVActor:
                 f"You remove the {item.friendly_name} from your pack and set it aside.")
             del self.inventory[item.internal_name]
             return True
-        else:
-            return False
+
+        return False
