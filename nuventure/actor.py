@@ -1,5 +1,6 @@
 from nuventure.world import NVWorld, NVWorldNode
 from nuventure.item import NVItem
+import textwrap
 
 actor_types = {"player", "npc"}
 
@@ -61,8 +62,12 @@ class NVActor:
             True if movement succeeded, False if not, None if the movement verb
             was invalid.
         """
+        prev_loc = self.location
         result = self.bound_world.try_move(self, direction)
         if result and self.actor_type == "player":
+            print(*textwrap.wrap(prev_loc.neighbors[direction]["travel_description"],
+                                 width=72), sep="\n")
+            print("")
             self.location.render()
         return result
 
