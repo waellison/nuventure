@@ -1,38 +1,54 @@
+"""Parser module for Nuventure, a poor man's implementation of ScummVM.
+
+NVParser requires the NLTK library for parsing input text.  It is also in
+dire need of proper documentation.
+
+https://github.com/tnwae/nuventure
+
+Copyright (c) 2021 by William Ellison.
+<waellison@gmail.com>
+
+Nuventure is licensed under the terms of the MIT License, furnished
+in the LICENSE file at the root directory of this distribution.
+"""
+
 from typing import Callable
 from nuventure.actor import NVActor
 from nltk import ne_chunk, pos_tag, word_tokenize
 import json
 from nuventure.verb_callbacks import *
 
-_verb_prefix = "do_"
+VERB_PREFIX = "do_"
 
-simple_actions = {
+SIMPLE_ACTIONS = {
     "inventory", "look", "east", "north", "south",
     "west", "up", "down", "quit", "dig", "help",
     "iddqd", "xyzzy", "idkfa", "arkhtos"
 }
 
-target_actions_no_impl = {
+TARGET_ACTIONS_NO_IMPL = {
     "inspect", "cast", "open", "close", "read",
     "speak", "take", "steal", "drop"
 }
 
-target_actions_impl_first = {
+TARGET_ACTIONS_IMPL_FIRST = {
     "buy", "sell", "cast", "insert", "remove"
 }
 
-target_actions_target_first = {
+TARGET_ACTIONS_TARGET_FIRST = {
     "attack", "lock", "unlock"
 }
 
-all_verbs = simple_actions | target_actions_target_first \
-    | target_actions_impl_first | target_actions_no_impl
+ALL_VERBS = SIMPLE_ACTIONS | TARGET_ACTIONS_TARGET_FIRST \
+    | TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL
 
 
 class NVVerb:
+    """
+    """
+
     def __init__(self, name: str, callback: Callable[[NVActor, any, any], None],
-                 helptext: str, errortext: str, source=None, implement=None,
-                 targetActor=None):
+                 helptext: str, errortext: str):
         """Creates a new verb object.
 
         Verbs represent permissible actions in the Nuventure engine.  A given Verb
@@ -40,9 +56,9 @@ class NVVerb:
         and the item and target, if needed.
         """
         self.name = name
-        self.invoker = source
-        self.bound_item = implement
-        self.target = targetActor
+        self.invoker = None
+        self.bound_item = None
+        self.target = None
         self.callback = callback
         self.helptext = helptext
         self.errortext = errortext
@@ -72,7 +88,7 @@ class NVParser:
             db = json.load(fh)
 
         for verb, rest in db.items():
-            vname = _verb_prefix + verb
+            vname = VERB_PREFIX + verb
             helptext = rest["helptext"]
             errtext = rest["errortext"]
 
@@ -81,8 +97,8 @@ class NVParser:
 
             if "aliases" in rest.keys():
                 for alias in rest["aliases"]:
-                    if alias in all_verbs:
-                        aname = _verb_prefix + alias
+                    if alias in ALL_VERBS:
+                        aname = VERB_PREFIX + alias
                         if aname in globals():
                             cbk = globals()[aname]
                             self.verbs[alias] = NVVerb(
@@ -111,17 +127,17 @@ class NVParser:
         return action
 
     def do_parse(self, input_string):
-        if len(input_string) == 0:
+        if not input_string:
             return None
 
         bareword = input_string.split()[0]
-        if not bareword in all_verbs:
+        if not bareword in ALL_VERBS:
             return None
 
         if bareword == "help":
             return self.do_help(input_string)
 
-        if input_string in simple_actions:
+        if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
 
         input_string = "I " + input_string
@@ -173,17 +189,17 @@ class NVParser:
             else:
                 return self.error(verb)
         elif len(noun_candidates) == 2:
-            if verb in target_actions_impl_first:
+            if verb in TARGET_ACTIONS_IMPL_FIRST:
                 implement = noun_candidates[0]
                 target = noun_candidates[1]
-            elif verb in target_actions_target_first:
+            elif verb in TARGET_ACTIONS_TARGET_FIRST:
                 implement = noun_candidates[1]
                 target = noun_candidates[0]
             else:
                 # Needs moar error checking
                 return self.error(verb)
         elif len(noun_candidates) == 1:
-            if verb in target_actions_no_impl:
+            if verb in TARGET_ACTIONS_NO_IMPL:
                 target = noun_candidates[0]
             else:
                 # Needs moar error checking
