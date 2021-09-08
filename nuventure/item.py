@@ -92,9 +92,6 @@ class NVItem:
         """
         return self.friendly_name
 
-    def use(self):
-        pass
-
 
 class NVLamp(NVItem):
     """
