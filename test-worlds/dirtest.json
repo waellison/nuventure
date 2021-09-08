@@ -2,7 +2,7 @@
     "mapNodes": {
         "ORIGIN": {
             "friendlyName": "Home",
-            "longDescription": "You wake up in the house your parents willed you before they died.  Light filters in through the window to the east as the sun rises.  You look over your possessions one last time before picking up your rucksack and deciding to leave.  The door is open facing to the south.  A ladder on the north wall leads up to the cellar, while a ladder on the east wall leads down to the cellar.",
+            "longDescription": "You wake up in the house your parents willed you before they died.  Light filters in through the window to the east as the sun rises.  You look over your possessions one last time before picking up your rucksack and deciding to leave.  The door is open facing to the west.  A ladder on the north wall leads up to the cellar, while a ladder on the east wall leads down to the cellar.",
             "shortDescription": "You are inside your house.  The door is open toward the west.  Ladders lead up to the attic and down to the cellar.",
             "requiresState": null,
             "inducesState": [
@@ -213,12 +213,12 @@
             "shortDescription": "This is your father's old sword.",
             "useDescription": "You draw the sword from its scabbard and ready yourself to attack.",
             "useAltDescription": null,
+            "power": 10,
             "inducesState": [
                 {
                     "method": "_do_damage",
                     "parms": {
-                        "damage_target": "{0}",
-                        "damage_amount": 10
+                        "damage_target": "{0}"
                     },
                     "triggerAction": "attack",
                     "description": "You swing your sword at the {0}!"
