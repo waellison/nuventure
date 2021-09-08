@@ -9,7 +9,9 @@
             "down"
         ],
         "helptext": "Move in the specified direction.",
-        "errortext": "Can't go that way."
+        "errortext": {
+            "badarg": "Can't go that way."
+        }
     },
     "help": {
         "helptext": "Show this help.",
@@ -17,11 +19,14 @@
     },
     "look": {
         "helptext": "Describe the current location.",
-        "errortext": "You can't see anything!"
+        "errortext": null
     },
     "inspect": {
         "helptext": "Inspect the specified item.",
-        "errortext": "You can't inspect what you can't see!"
+        "errortext": {
+            "noargs": "You didn't specify anything to inspect.",
+            "badarg": "There is no {0} here to inspect."
+        }
     },
     "quit": {
         "helptext": "Quits the program.",
@@ -29,18 +34,27 @@
     },
     "take": {
         "helptext": "Put the specified object in the inventory.",
-        "errortext": "There's nothing to take."
+        "errortext": {
+            "noargs": "There's nothing to take."
+        }
     },
     "drop": {
         "helptext": "Drop the specified item from the inventory.",
-        "errortext": "You can't drop something you don't have."
+        "errortext": {
+            "noargs": "There's nothing to drop.",
+            "badarg": "You do not have a {0} in your inventory."
+        }
     },
     "inventory": {
         "helptext": "View your inventory.",
-        "errortext": "You have no items."
+        "errortext": {
+            "noargs": "You have no items."
+        }
     },
     "arkhtos": {
         "helptext": null,
-        "errortext": "Stop trying to cheat."
+        "errortext": {
+            "cellnotseen": "Stop trying to cheat."
+        }
     }
 }
