@@ -9,6 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
+from nuventure import ERROR_STR
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
 from nuventure.parser import NVParser
@@ -40,8 +41,10 @@ class NVGame:
     def _do_parse_error(self):
         """Issue a parse error."""
         last = self.parser.last_command
-        if not last:
+        if last:
             self.parser.error(last.split(" ")[0])
+        else:
+            print(ERROR_STR)
 
     def _do_input_loop(self):
         """Accept input from the user and process it."""

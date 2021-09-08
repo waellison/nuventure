@@ -57,7 +57,7 @@ class NVItem:
 
     def drop(self, giver):
         """Drop an item back into the world, taking it from the
-        actor giving it back to the item.
+        actor giving it back to the world.
 
         Args:
             giver: the actor dropping the item
@@ -91,3 +91,60 @@ class NVItem:
         Show the friendly name of the item.
         """
         return self.friendly_name
+
+    def use(self):
+        pass
+
+
+class NVLamp(NVItem):
+    """
+    A Lamp is an item that provides light in dark areas.
+    """
+
+    def __init__(self, iname: str, dbinfo: dict, world):
+        """
+        Create a new lamp.  The lit state starts as false.
+        """
+        super().__init__(iname, dbinfo, world)
+        self.lit_state = False
+
+    def use(self, action):
+        if self.lit_state:
+            self.lit_state = False
+        else:
+            self.lit_state = True
+
+    def is_lit(self):
+        return self.lit_state
+
+
+class NVWeapon(NVItem):
+    def __init__(self, iname: str, dbinfo: dict, world):
+        super().__init__(iname, dbinfo, world)
+        try:
+            self.power = dbinfo["power"]
+            self.print_on_use = dbinfo["inducesState"][0]["description"]
+        except KeyError:
+            print(
+                "error: cannot init a weapon without specifying attack power or use string")
+
+    def use(self, other):
+        if not other:
+            return -1
+        else:
+
+            other.injure(self.power)
+            return self.power
+
+
+class NVSpellbook(NVItem):
+    def __init__(self, iname: str, dbinfo: dict, world):
+        super().__init__(iname, dbinfo, world)
+        # TODO write code to pull spellbook info
+        self.spell = None
+
+    def use(self, user):
+        if self.spell not in user.spells:
+            return user.confer_spell(self.spell)
+        else:
+            return False

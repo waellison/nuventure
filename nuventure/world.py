@@ -12,7 +12,7 @@ in the LICENSE file at the root directory of this distribution.
 import textwrap
 import json
 import random
-from nuventure.item import NVItem
+from nuventure.item import NVItem, NVWeapon, NVSpellbook, NVLamp
 
 
 class NVWorldNode:
@@ -118,7 +118,14 @@ class NVWorld:
             self.nodes[key] = NVWorldNode(key, value)
 
         for key, value in rawdata["items"].items():
-            self.items[key] = NVItem(key, value, self)
+            itypes = {
+                "lamp": NVLamp,
+                "weapon": NVWeapon,
+                "spellbook": NVSpellbook
+            }
+            klass = itypes.get(value["type"], NVItem)
+
+            self.items[key] = klass(key, value, self)
 
         self.actors = []
         self.parser = None
