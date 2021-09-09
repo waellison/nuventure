@@ -10,7 +10,7 @@
         ],
         "helptext": "Move in the specified direction.",
         "errortext": {
-            "badarg": "Can't go that way."
+            "badarg": "Can't go {0}."
         }
     },
     "help": {
@@ -25,7 +25,8 @@
         "helptext": "Inspect the specified item.",
         "errortext": {
             "noargs": "You didn't specify anything to inspect.",
-            "badarg": "There is no {0} here to inspect."
+            "badarg": "There is no {0} here to inspect.",
+            "badtgt": "There is no {0} here to inspect."
         }
     },
     "quit": {
@@ -35,14 +36,17 @@
     "take": {
         "helptext": "Put the specified object in the inventory.",
         "errortext": {
-            "noargs": "There's nothing to take."
+            "noargs": "There's nothing to take.",
+            "badarg": "There is no {0} in the scene.",
+            "badtgt": "There is no {0} in the scene."
         }
     },
     "drop": {
         "helptext": "Drop the specified item from the inventory.",
         "errortext": {
             "noargs": "There's nothing to drop.",
-            "badarg": "You do not have a {0} in your inventory."
+            "badarg": "You do not have a {0} in your inventory.",
+            "badtgt": "You do not have a {0} in your inventory."
         }
     },
     "inventory": {

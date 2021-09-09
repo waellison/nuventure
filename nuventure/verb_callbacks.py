@@ -15,84 +15,117 @@ in the LICENSE file at the root directory of this distribution.
 import sys
 from nuventure.actor import NVActor
 from nuventure.item import NVLamp
+from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError
 
 
 def do_east(actor: NVActor, *_):
-    return actor.move("east")
+    """Move the player to the east."""
+    try:
+        return actor.move("east")
+    except NVBadArgError:
+        raise
 
 
 def do_west(actor: NVActor, *_):
-    return actor.move("west")
+    """Move the player to the west."""
+    try:
+        return actor.move("west")
+    except NVBadArgError:
+        raise
 
 
 def do_north(actor: NVActor, *_):
-    return actor.move("north")
+    """Move the player to the north."""
+    try:
+        return actor.move("north")
+    except NVBadArgError:
+        raise
 
 
 def do_up(actor: NVActor, *_):
-    return actor.move("up")
+    """Move the player up."""
+    try:
+        return actor.move("up")
+    except NVBadArgError:
+        raise
 
 
 def do_down(actor: NVActor, *_):
-    return actor.move("down")
+    """Move the player down."""
+    try:
+        return actor.move("down")
+    except NVBadArgError:
+        raise
 
 
 def do_south(actor: NVActor, *_):
-    return actor.move("south")
+    """Move the player to the south."""
+    try:
+        return actor.move("south")
+    except NVBadArgError:
+        raise
 
 
 def do_look(actor: NVActor, *_):
+    """Print a description of the cell where the player is."""
     actor.location.render(longp=True)
     return True
 
 
-def do_inspect(actor: NVActor, target: any, _):
+def do_inspect(actor: NVActor, target, _):
+    """Inspect an item in the same cell as the player."""
     here = actor.location
     target_itm = actor.bound_world.items[target]
     if target_itm in here.items:
         target_itm.render()
         return True
-    return False
+    raise NVBadArgError("inspect", target)
 
 
 def do_take(actor: NVActor, target, _):
+    """Take an item from the scene and put it in the player's inventory,
+    if it exists in the same cell as the player."""
     here = actor.location
     try:
         target_itm = actor.bound_world.items.get(target, None)
         assert(target_itm.location == here)
-    except AssertionError:
-        return False
+    except (AssertionError, AttributeError):
+        raise NVBadArgError("take", target) from None
     except KeyError:
-        return False
+        raise NVBadTargetError("take", target) from None
     return actor.add_item(target_itm)
 
 
 def do_drop(actor: NVActor, target, _):
+    """Take an item from the player's inventory and place it in the cell
+    where the player is."""
     try:
         target_itm = actor.inventory[target]
     except KeyError:
-        return False
+        raise NVBadArgError("drop", target)
     return actor.drop_item(target_itm)
 
 
 def do_inventory(actor: NVActor, *_):
+    """Show the player's inventory, if there is anything in it."""
     if len(actor.inventory):
         print("\nYour Inventory:")
         for item in actor.inventory.values():
             print(item.short_render())
         return True
 
-    return False
+    raise NVNoArgError
 
 
 def do_light(actor: NVActor, target, _):
+    """Light the player's lamp, if the player has it and it is not lit."""
     try:
         lamp = actor.inventory[target]
         assert(isinstance(lamp, NVLamp))
     except AssertionError:
-        return False
+        raise NVBadArgError("light", target)
     except KeyError:
-        return False
+        return NVBadTargetError("light", target)
 
     """
     Possibilities for error handling:
@@ -127,27 +160,28 @@ def do_light(actor: NVActor, target, _):
       Note: I would want NVBadArgError, NVNoArgError, and NVBadTargetError at
       the minimum.
     """
-
-    if lamp.lit_state:
-        return False  # lamp is already lit
+    if lamp.is_lit():
+        raise NVGameStateError("light", "cannot light already lit lamp")
     else:
-        lamp.lit_state = True
+        lamp.use()
         return True
 
 
 def do_extinguish(actor: NVActor, target, _):
+    """Extinguish the player's lamp, if the player has it and it is lit."""
     try:
         lamp = actor.inventory[target]
         assert(isinstance(lamp, NVLamp))
     except AssertionError:
-        return False
+        raise NVBadArgError("extinguish", target)
     except KeyError:
-        return False
+        raise NVBadTargetError("extinguish", target)
 
-    if not lamp.lit_state:
-        return False
+    if not lamp.is_lit():
+        raise NVGameStateError(
+            "extinguish", "cannot extinguish already extinguished lamp")
     else:
-        lamp.lit_state = False
+        lamp.use()
         return True
 
 

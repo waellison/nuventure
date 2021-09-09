@@ -335,3 +335,19 @@ class NVParser:
             print(verb.errortext)
         else:
             print(ERROR_STR)
+
+    def rich_error(self, whoopsie: str, which: str, target=None):
+        """
+        Print a nicer error message if parsing generates an error.
+        """
+        verb = self.verbs.get(whoopsie, None)
+        if verb:
+            if target:
+                estring = verb.errortext.get(
+                    which, ERROR_STR + " (target was: {0})")
+                output = estring.format(target)
+            else:
+                output = verb.errortext.get(which, ERROR_STR)
+            print(output)
+        else:
+            print(ERROR_STR)

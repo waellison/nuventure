@@ -110,9 +110,9 @@ class NVWorld:
         """
         self.nodes = {}
         self.items = {}
-        fh = open(pathname, "r")
-        rawdata = json.load(fh)
-        fh.close()
+
+        with open(pathname, "r") as fh:
+            rawdata = json.load(fh)
 
         for key, value in rawdata["mapNodes"].items():
             self.nodes[key] = NVWorldNode(key, value)

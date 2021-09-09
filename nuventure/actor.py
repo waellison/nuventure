@@ -12,6 +12,7 @@ in the LICENSE file at the root directory of this distribution.
 import textwrap
 from nuventure.world import NVWorld, NVWorldNode
 from nuventure.item import NVItem
+from nuventure.errors import NVBadArgError
 
 ACTOR_TYPES = {"player", "npc"}
 
@@ -78,6 +79,10 @@ class NVActor:
             was invalid."""
         prev_loc = self.location
         result = self.bound_world.try_move(self, direction)
+
+        if not result:
+            raise NVBadArgError(direction, direction)
+
         if result and self.actor_type == "player":
             print(*textwrap.wrap(prev_loc.neighbors[direction]["travel_description"],
                                  width=72), sep="\n")

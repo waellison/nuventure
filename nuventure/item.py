@@ -105,7 +105,7 @@ class NVLamp(NVItem):
         super().__init__(iname, dbinfo, world)
         self.lit_state = False
 
-    def use(self, action):
+    def use(self):
         if self.lit_state:
             self.lit_state = False
         else:

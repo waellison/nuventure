@@ -9,6 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
+from nuventure.errors import NVBadArgError, NVBadTargetError, NVNoArgError
 from nuventure import ERROR_STR
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
@@ -59,9 +60,11 @@ class NVGame:
             do_quit()
         else:
             if verb:
-                result = verb.invoke()
+                try:
+                    verb.invoke()
+                except (NVBadArgError, NVBadTargetError) as ex:
+                    self.parser.rich_error(ex.verb, ex.et_key, ex.arg)
+                except NVNoArgError as ex:
+                    self.parser.rich_error(ex.verb, "noargs")
             else:
-                result = False
-
-            if not result:
                 self._do_parse_error()
