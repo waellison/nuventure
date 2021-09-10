@@ -15,3 +15,5 @@ install a corpus as described [on the NLTK site][0]:
 
 Given how small the input language for Nuventure is, it should suffice
 to install any corpus; I wrote and tested with the `popular` package.
+
+[0]: https://nltk.org
