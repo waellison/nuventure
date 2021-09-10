@@ -55,6 +55,24 @@
             "noargs": "You have no items."
         }
     },
+    "light": {
+        "helptext": "Light the lamp, if you have it.",
+        "errortext": {
+            "noargs": "Light what, exactly?",
+            "badarg": "I don't know how to light a {0}.",
+            "badtgt": "You don't have a lamp.",
+            "badstate": "The lamp is already lit."
+        }
+    },
+    "extinguish": {
+        "helptext": "Extinguish the lamp, if you have it.",
+        "errortext": {
+            "noargs": "Extinguish what, exactly?",
+            "badarg": "I don't know how to extinguish a {0}.",
+            "badtgt": "You don't have a lamp.",
+            "badstate": "The lamp is already extinguished."
+        }
+    },
     "arkhtos": {
         "helptext": null,
         "errortext": {

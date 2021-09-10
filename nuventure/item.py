@@ -31,9 +31,11 @@ class NVItem:
         self.look_description = dbinfo["inSceneDescription"]
         self.long_description = dbinfo["longDescription"]
         self.take_description = dbinfo["takeDescription"] or None
-        self.map_node = world.nodes[dbinfo["originCell"]]
+        self.use_description = [
+            dbinfo["useDescription"], dbinfo["useAltDescription"]]
+        self.location = world.nodes[dbinfo["originCell"]]
         self.owner = None
-        self.map_node.add_item(self)
+        self.location.add_item(self)
 
     def take(self, taker):
         """Take an item from the world and give it to the actor
@@ -52,8 +54,8 @@ class NVItem:
         else:
             print(self.take_description)
             self.owner = taker
-            self.map_node.items.remove(self)
-            self.map_node = None
+            self.location.items.remove(self)
+            self.location = None
 
     def drop(self, giver):
         """Drop an item back into the world, taking it from the
@@ -68,8 +70,8 @@ class NVItem:
         See Also:
             NVActor.drop_item"""
         self.owner = None
-        self.map_node = giver.location
-        self.map_node.items.append(self)
+        self.location = giver.location
+        self.location.items.append(self)
 
     def __str__(self):
         return self.internal_name
@@ -108,8 +110,10 @@ class NVLamp(NVItem):
     def use(self):
         if self.lit_state:
             self.lit_state = False
+            print(*textwrap.wrap(self.use_description[1], width=72), sep="\n")
         else:
             self.lit_state = True
+            print(*textwrap.wrap(self.use_description[0], width=72), sep="\n")
 
     def is_lit(self):
         return self.lit_state
@@ -129,7 +133,6 @@ class NVWeapon(NVItem):
         if not other:
             return -1
         else:
-
             other.injure(self.power)
             return self.power
 
@@ -137,7 +140,7 @@ class NVWeapon(NVItem):
 class NVSpellbook(NVItem):
     def __init__(self, iname: str, dbinfo: dict, world):
         super().__init__(iname, dbinfo, world)
-        # TODO write code to pull spellbook info
+        self.info = dbinfo
         self.spell = None
 
     def use(self, user):

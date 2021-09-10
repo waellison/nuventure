@@ -68,7 +68,12 @@ def do_south(actor: NVActor, *_):
 
 def do_look(actor: NVActor, *_):
     """Print a description of the cell where the player is."""
-    actor.location.render(longp=True)
+    print_state = False
+    if actor.location.wanted_state == "lamp_lit":
+        lamp = actor.inventory.get("lamp")
+        if isinstance(lamp, NVLamp) and lamp.is_lit():
+            print_state = True
+    actor.location.render(longp=True, statefulp=print_state)
     return True
 
 

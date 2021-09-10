@@ -59,10 +59,10 @@
             "friendlyName": "Cellar",
             "longDescription": "You look around the cellar of your house.  It is cold, damp, and dark, and the cellar is packed with crates and boxes.",
             "shortDescription": "You are in the cellar of your house.  A ladder leads upstairs to the main room.",
-            "requiresState": null,
+            "requiresState": "lamp_lit",
             "inducesState": null,
-            "longDescriptionWithState": null,
-            "shortDescriptionWithState": null,
+            "longDescriptionWithState": "Shadows dance around the basement as the flame in your lamp flickers.  All you can see is a bunch of dusty crates and boxes as your lamp illuminates the stillness.  The ladder behind you leads upstairs.",
+            "shortDescriptionWithState": "The flame of your lamp illuminates the cellar, which is filled with boxes.  A ladder leads upstairs to the main room.",
             "linkedNodes": [
                 {
                     "name": "ORIGIN",

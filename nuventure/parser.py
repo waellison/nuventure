@@ -18,6 +18,7 @@ from nltk import ne_chunk, pos_tag, word_tokenize
 from nuventure import ERROR_STR
 from nuventure.actor import NVActor
 from nuventure.verb_callbacks import *
+from nuventure.errors import NVParseError
 
 VERB_PREFIX = "do_"
 
@@ -53,10 +54,14 @@ TARGET_ACTIONS_TARGET_FIRST = {
 fifth type."""
 HELP_ACTION = {"help"}
 
-"""A list of all verbs, which is a simple union of the five types of verb
+"""A set of all verbs, which is a simple union of the five types of verb
 terminals recognized by Nuventure."""
 ALL_VERBS = SIMPLE_ACTIONS | TARGET_ACTIONS_TARGET_FIRST \
     | TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | HELP_ACTION
+
+"""A set of the verbs which require a target."""
+ALL_TARGETED_VERBS = TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | \
+    TARGET_ACTIONS_TARGET_FIRST
 
 
 def _get_callback(verb):
@@ -278,7 +283,7 @@ class NVParser:
         # and then check the nouns.  These are labeled with NN, JJ, or
         # NNS.
         for i in entities:
-            if i[1] == "VBP":
+            if i[1] in {"VBP", "VBD"}:
                 action = _get_callback(i[0])
                 verb = i[0]
             elif i[1] in {"NN", "JJ", "NNS"}:
@@ -314,6 +319,10 @@ class NVParser:
             if verb in TARGET_ACTIONS_NO_IMPL:
                 target = noun_candidates[0]
             else:
+                self.error(verb)
+                return None
+        else:
+            if verb in ALL_TARGETED_VERBS:
                 self.error(verb)
                 return None
 

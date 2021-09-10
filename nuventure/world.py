@@ -35,6 +35,7 @@ class NVWorldNode:
         self.neighbors = {}
         self.descriptions = {}
         self.visitedp = False
+        self.wanted_state = dbinfo["requiresState"]
 
         self.descriptions["long"] = dbinfo["longDescription"]
         self.descriptions["short"] = dbinfo["shortDescription"]
@@ -60,6 +61,8 @@ class NVWorldNode:
         scene.
 
         Args:
+            longp: True if the long description should be printed, False
+                otherwise.
             statefulp: True if the description should be the one triggered by
                 the required state, False otherwise."""
         length = "long" if longp or not self.visitedp else "short"
@@ -102,7 +105,7 @@ class NVWorldNode:
 
 
 class NVWorld:
-    def __init__(self, pathname="./world.json"):
+    def __init__(self, game_instance, pathname="./world.json"):
         """Creates a new game world, populating its nodes.
 
         Args:
@@ -128,7 +131,7 @@ class NVWorld:
             self.items[key] = klass(key, value, self)
 
         self.actors = []
-        self.parser = None
+        self.game_instance = game_instance
 
     def add_actor(self, actor):
         """Adds an actor to the world.
@@ -160,12 +163,12 @@ class NVWorld:
         their movement rate.  Movement direction is randomly chosen per move.
         """
         for actor in self.actors:
-            if actor.actor_types == "player":
+            if actor == self.game_instance.player:
                 continue
 
             for _ in range(0, actor.movement_rate):
                 directions = actor.location.neighbors.keys()
                 thisway = random.choice(directions)
-                movement = self.parser.verbs[thisway]
+                movement = self.game_instance.parser.verbs[thisway]
                 movement.invoker = actor
                 movement.invoke()

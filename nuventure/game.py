@@ -24,7 +24,7 @@ class NVGame:
     """
 
     def __init__(self, path):
-        self.world = NVWorld(path)
+        self.world = NVWorld(self, path)
         self.start_node = self.world.nodes["ORIGIN"]
         self.player = NVActor(self.world, self.start_node)
         self.world.add_actor(self.player)
