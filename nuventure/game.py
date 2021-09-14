@@ -37,7 +37,9 @@ class NVGame:
         self.player.location.render()
 
         while True:
-            self._do_input_loop()
+            result = self._do_input_loop()
+            if result:
+                self.world.do_world_tic()
 
     def _do_parse_error(self):
         """Issue a parse error."""
@@ -61,12 +63,15 @@ class NVGame:
         else:
             if verb:
                 try:
-                    verb.invoke()
+                    result = verb.invoke()
                 except (NVBadArgError, NVBadTargetError) as ex:
                     self.parser.rich_error(ex.verb, ex.et_key, ex.arg)
                 except NVNoArgError as ex:
                     self.parser.rich_error(ex.verb, "noargs")
                 except NVGameStateError as ex:
                     print(ex.what)
+                else:
+                    return result
             else:
                 self._do_parse_error()
+                return False
