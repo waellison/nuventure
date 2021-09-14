@@ -17,6 +17,26 @@ DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
 """The default error string for parse errors."""
 ERROR_STR = "Huh?"
 
+DEBUG_MODE = True
+
+
+def func_name():
+    """Return the name of the function we are currently in."""
+    return sys._getframe().f_back.f_code.co_name
+
+
+def dbg_print(funcname, *args):
+    """
+    Print debug output, if debugging is enabled.
+
+    Args:
+        funcname: name of the calling function
+        *args: one or more strings to print
+    """
+    if DEBUG_MODE:
+        print(f"{funcname}:", *args)
+
+
 if __name__ == "__main__":
     print("this script is not runnable separately", file=sys.stderr)
     sys.exit(1)

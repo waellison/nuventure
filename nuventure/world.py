@@ -12,6 +12,7 @@ in the LICENSE file at the root directory of this distribution.
 import textwrap
 import json
 import random
+from nuventure import dbg_print, func_name
 from nuventure.item import NVItem, NVWeapon, NVSpellbook, NVLamp
 
 
@@ -162,6 +163,8 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
+        dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
+
         for actor in self.actors:
             if actor == self.game_instance.player:
                 continue

@@ -10,6 +10,7 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import textwrap
+from nuventure import dbg_print, func_name
 from nuventure.world import NVWorld, NVWorldNode
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
@@ -96,6 +97,8 @@ class NVActor:
         Args:
             item: the item to add to the inventory"""
         if item:
+            dbg_print(
+                func_name(), f"taking item {item.internal_name} for owner {self}")
             item.take(self)
             self.inventory[item.internal_name] = item
             return True
@@ -109,6 +112,8 @@ class NVActor:
         Args:
             item: the item to drop"""
         if self.inventory.get(item.internal_name):
+            dbg_print(
+                func_name(), f"dropping item {item.internal_name} from owner {self}")
             item.drop(self)
             print(
                 f"You remove the {item.friendly_name} from your pack and set it aside.")
