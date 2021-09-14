@@ -94,11 +94,10 @@ class NVVerb:
     """
     NVVerb is the class for actions invoked by the parsing engine.
 
-    Verbs represent permissible actions in the Nuventure engine.  A given NVVerb
-    is bound to the actor that invokes it, the world object in which it is invoked,
-    and the item and target, if needed; they are set to None otherwise before
-    NVVerb.invoke is called.
-    """
+    Verbs represent permissible actions in the Nuventure engine.  A
+    given NVVerb is bound to the actor that invokes it, the world object
+    in which it is invoked, and the item and target, if needed; they are
+    set to None otherwise before NVVerb.invoke is called."""
 
     def __init__(self, name: str, callback: Callable[[NVActor, any, any], None],
                  helptext: str, errortext: str):
@@ -168,14 +167,14 @@ class NVParser:
                 self.verbs[verb] = NVVerb(verb, cbk, helptext, errtext)
 
     def read_command(self, actor):
-        """Read a command from an actor.  The actor must be the player character.
-        If not, this command will raise an exception.
+        """Read a command from an actor.  The actor must be the player
+        character.  If not, this command will raise an exception.
 
         Args:
             actor: the actor on whose behalf we are executing a command
 
-        Returns: The NVVerb object corresponding to the entered command if the
-            parse was successful, None otherwise.
+        Returns: The NVVerb object corresponding to the entered command if
+            the parse was successful, None otherwise.
 
         Raises:
             RuntimeError: if an NPC is passed as the invoking actor
@@ -208,25 +207,27 @@ class NVParser:
             input_string: the input read by NVParser.read_command
 
         Returns:
-            An NVVerb object describing the parsed command; None if the command
-            is not found or is invalid.
+            An NVVerb object describing the parsed command; None if the
+            command is not found or is invalid.
         """
         if not input_string:
             return None
 
-        # Verify that the user's input even contains a valid verb before proceeding.
+        # Verify that the user's input even contains a valid verb before
+        # proceeding.
         input_string = input_string.lower()
         tokens = input_string.split()
-        if not tokens[0] in ALL_VERBS:
+        if (len(tokens) == 0) or (not tokens[0] in ALL_VERBS):
             return None
 
-        # The "help" bareword is a special case since it does not need to invoke
-        # a callback.  The "help" bareword is the "fifth type" of verb in Nuventure.
+        # The "help" bareword is a special case since it does not need to
+        # invoke a callback.  The "help" bareword is the "fifth type" of
+        # verb in Nuventure.
         if tokens[0] == "help":
             return self.do_help(input_string)
 
-        # Simple actions require no arguments.  These are considered to be the
-        # "fourth type" of verbs in Nuventure.
+        # Simple actions require no arguments.  These are considered to be
+        # the "fourth type" of verbs in Nuventure.
         if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
 
