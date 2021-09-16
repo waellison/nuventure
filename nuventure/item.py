@@ -33,9 +33,15 @@ class NVItem:
         self.take_description = dbinfo["takeDescription"] or None
         self.use_description = [
             dbinfo["useDescription"], dbinfo["useAltDescription"]]
-        self.location = world.nodes[dbinfo["originCell"]]
-        self.owner = None
-        self.location.add_item(self)
+
+        self.location = world.nodes.get(dbinfo["originCell"], None)
+
+        if dbinfo["originOwner"]:
+            self.owner = world.actors.get(dbinfo["originOwner"], None)
+            self.owner.inventory[iname] = self
+
+        if self.location:
+            self.location.items.append(self)
 
     def take(self, taker):
         """Take an item from the world and give it to the actor

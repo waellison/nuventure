@@ -11,7 +11,6 @@ in the LICENSE file at the root directory of this distribution.
 
 import textwrap
 from nuventure import dbg_print, func_name
-from nuventure.world import NVWorld, NVWorldNode
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
 
@@ -26,22 +25,25 @@ class NVActor:
     current gametic.
     """
 
-    def __init__(self, bound_world: NVWorld, location: NVWorldNode, name="Adventurer", hp=100, actor_type="player", movement_rate=1):
+    def __init__(self, bound_world, location, iname="PLAYER", name="Adventurer", hp=100, actor_type="player", movement_rate=1):
         """Create a new actor object.
 
         Args:
             bound_world: the world object to which this actor is bound
             location: the node within the world where this actor is currently located
+            iname: the internal name of this actor (defaults to "PLAYER")
             name: the name of this actor (defaults to "Adventurer")
             hp: the amount of hit points to give this character (defaults to 100)
             actor_type: the type of actor this is (player or NPC)
             movement_rate: the actor's movement rate (defaults to 1 node per gametic)
         """
+        self.internal_name = iname
         self.name = name
         self.bound_world = bound_world
         self.location = location
         self.hit_points = hp
         self.inventory = {}
+        self.description = None
 
         if actor_type in ACTOR_TYPES:
             self.actor_type = actor_type

@@ -14,6 +14,7 @@ import json
 import random
 from nuventure import dbg_print, func_name
 from nuventure.item import NVItem, NVWeapon, NVSpellbook, NVLamp
+from nuventure.actor import NVActor
 
 
 class NVWorldNode:
@@ -35,6 +36,7 @@ class NVWorldNode:
         self.items = []
         self.neighbors = {}
         self.descriptions = {}
+        self.npcs = []
         self.visitedp = False
         self.wanted_state = dbinfo["requiresState"]
 
@@ -69,6 +71,9 @@ class NVWorldNode:
         length = "long" if longp or not self.visitedp else "short"
         print(self.friendly_name)
         print(*textwrap.wrap(self.describe(length, statefulp)), sep="\n")
+
+        for actor in self.npcs:
+            print(actor.description)
 
         for item in self.items:
             print(item.look_description)
@@ -114,12 +119,25 @@ class NVWorld:
         """
         self.nodes = {}
         self.items = {}
+        self.actors = {}
 
         with open(pathname, "r") as fh:
             rawdata = json.load(fh)
 
         for key, value in rawdata["mapNodes"].items():
             self.nodes[key] = NVWorldNode(key, value)
+
+        for key, value in rawdata["npcs"].items():
+            movement_rate = value["movementRate"]
+            where = self.nodes[value["originCell"]]
+            iname = key
+            fname = value["friendlyName"]
+
+            actor = NVActor(self, where, iname, fname,
+                            100, "npc", movement_rate)
+            actor.description = value["inSceneDescription"]
+            self.actors[iname] = actor
+            self.nodes[value["originCell"]].npcs.append(actor)
 
         for key, value in rawdata["items"].items():
             itypes = {
@@ -128,10 +146,8 @@ class NVWorld:
                 "spellbook": NVSpellbook
             }
             klass = itypes.get(value["type"], NVItem)
-
             self.items[key] = klass(key, value, self)
 
-        self.actors = []
         self.game_instance = game_instance
 
     def add_actor(self, actor):
@@ -139,7 +155,7 @@ class NVWorld:
 
         Args:
             actor: the Actor object to add"""
-        self.actors.append(actor)
+        self.actors[actor.internal_name] = actor
 
     def try_move(self, actor, direction):
         """Attempts to move an actor within the world.
@@ -163,15 +179,17 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
+        # dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
 
-        for actor in self.actors:
+        for actor in self.actors.values():
+            # dbg_print(func_name(), f"actor: {actor.internal_name}")
             if actor == self.game_instance.player:
                 continue
 
             for _ in range(0, actor.movement_rate):
                 directions = actor.location.neighbors.keys()
                 thisway = random.choice(directions)
+                # dbg_print(func_name(), f"moving {actor.internal_name} toward {thisway}")
                 movement = self.game_instance.parser.verbs[thisway]
                 movement.invoker = actor
                 movement.invoke()

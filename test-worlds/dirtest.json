@@ -100,8 +100,8 @@
         },
         "beta": {
             "friendlyName": "Town Gate",
-            "longDescription": "You stand a few hundred feet away from the town gate to the west.  The guards are not letting anyone through.  The road extends to the south from here, and it also curves back east, where you can see your house in the distance.",
-            "shortDescription": "You are near the town gate, but the town is closed to outsiders.  The road stretches east and south.",
+            "longDescription": "You stand a few hundred feet away from the town gate to the west.  The guards are not letting anyone through.  The road extends to the south from here, and it also curves back east, where you can see your house in the distance.  A merchant stall is visible to the north.",
+            "shortDescription": "You are near the town gate, but the town is closed to outsiders.  The road stretches east and south, and there is a merchant stall to the north.",
             "requiresState": null,
             "inducesState": null,
             "longDescriptionWithState": null,
@@ -116,6 +116,11 @@
                     "name": "gamma",
                     "direction": "south",
                     "travelDescription": "You head south toward the edge of a great forest."
+                },
+                {
+                    "name": "epsilon",
+                    "direction": "north",
+                    "travelDescription": "You proceed north toward a merchant stall."
                 }
             ],
             "itemsPresentOnLoad": null
@@ -169,6 +174,26 @@
             ],
             "itemsPresentOnLoad": null
         },
+        "epsilon": {
+            "friendlyName": "Merchant's Stall",
+            "longDescription": "You stand before a small merchant's stall.  Inside the stall is a table with various items for sale, each marked with a price, and you can see the wall of the town in the distance.  The road leads back south to the town gate.",
+            "shortDescription": "You are at the merchant's stall.  The road leads back to the south.",
+            "requiresState": null,
+            "inducesState": null,
+            "longDescriptionWithState": null,
+            "shortDescriptionWithState": null,
+            "linkedNodes": [
+                {
+                    "name": "beta",
+                    "direction": "south",
+                    "travelDescription": "You head north back to the crook in the road near your home."
+                }
+            ],
+            "itemsPresentOnLoad": null,
+            "npcsPresentOnLoad": [
+                "william"
+            ]
+        },
         "DEST": {
             "friendlyName": "Hill Summit",
             "longDescription": "The path westward from the forest clearing leads to the summit of a hill.  You can see the city walls from here; looking out to the south and east, you can see the horizon as the sea meets the sky, and if you look downhill, you can see the coastline.  The road back east heads down the hill behind you.",
@@ -202,7 +227,8 @@
             "conferStatusOnUse": "light",
             "stateful": true,
             "defaultState": "off",
-            "originCell": "ORIGIN"
+            "originCell": "ORIGIN",
+            "originOwner": null
         },
         "sword": {
             "friendlyName": "Sword",
@@ -226,7 +252,8 @@
             ],
             "stateful": false,
             "defaultState": null,
-            "originCell": "phi"
+            "originCell": "phi",
+            "originOwner": null
         },
         "stele": {
             "friendlyName": "Stele",
@@ -245,7 +272,76 @@
                     "description": "A voice calls down from the heavens and, in a booming voice, cries out: 'You're Winner!'"
                 }
             ],
-            "originCell": "DEST"
+            "originCell": "DEST",
+            "originOwner": null
+        },
+        "alchemist_journal": {
+            "friendlyName": "Alchemist's journal",
+            "type": "misc",
+            "inSceneDescription": "A withered old alchemist's journal sits on a table.",
+            "longDescription": "This old hidebound tome is filled with sketches, formulae, and scribbling in an obscure language whose script you cannot read.",
+            "takeDescription": "You pick up the journal and carefully place it in your rucksack.",
+            "shortDescription": "This is an old alchemist's journal.",
+            "useDescription": "You open the old journal, watching dust fly from between its pages.",
+            "useAltDescription": null,
+            "value": 20,
+            "inducesState": [
+                {
+                    "method": "_do_read_no_side_effects",
+                    "parms": null,
+                    "triggerAction": "read",
+                    "description": "You try to read the alchemist's odd, old handwriting but meet with no success: you simply cannot decipher the writing no matter how hard you try."
+                }
+            ],
+            "stateful": false,
+            "defaultState": null,
+            "originCell": null,
+            "originOwner": "william"
+        },
+        "axe": {
+            "friendlyName": "Axe",
+            "type": "weapon",
+            "inSceneDescription": "There is an axe laying here.",
+            "longDescription": "This is a simple steel war axe bought from a merchant near the town.  It has a leather-wrapped handle and has been sharpened many times over its life.",
+            "takeDescription": "You pick up the axe and slip it through the loop on your belt.",
+            "shortDescription": "This is a steel war axe.",
+            "useDescription": "You draw the axe from your belt loop and ready yourself to attack.",
+            "useAltDescription": null,
+            "power": 20,
+            "inducesState": [
+                {
+                    "method": "_do_damage",
+                    "parms": {
+                        "damage_target": "{0}"
+                    },
+                    "trigger_action": "attack",
+                    "description": "You swing your axe at the {0}!"
+                }
+            ],
+            "stateful": false,
+            "defaultState": null,
+            "originCell": null,
+            "originOwner": "william"
+        }
+    },
+    "npcs": {
+        "william": {
+            "friendlyName": "William the Merchant",
+            "type": "merchant",
+            "inSceneDescription": "A tall, chubby merchant stands in a nearby stall.",
+            "movementRate": 0,
+            "heldItems": [
+                "axe",
+                "alchemist_journal"
+            ],
+            "conversationLines": [
+                "Hi, I'm William!",
+                "The square root of rope is string.",
+                "Cellular phones will not give you cancer.  Only hepatitis.",
+                "To make a photocopier, simply photocopy a mirror.",
+                "Eighty-nine percent of magic tricks are not magic.  Technically, they are sorcery."
+            ],
+            "originCell": "epsilon"
         }
     }
 }
