@@ -119,7 +119,7 @@ def do_inventory(actor: NVActor, *_):
             print(item.short_render())
         return True
 
-    raise NVNoArgError
+    raise NVNoArgError("inventory")
 
 
 def do_light(actor: NVActor, target, _):
@@ -132,39 +132,6 @@ def do_light(actor: NVActor, target, _):
     except KeyError:
         return NVBadTargetError("light", target)
 
-    """
-    Possibilities for error handling:
-    - Return True if the command succeeds, some non-Boolean value if not.
-
-      Advantage: I could return a string describing the nature of the error,
-      allowing me to call the right string within the error printing routine.
-
-      Disadvantage: It is nonintuitive to return a truthy value if the command
-      fails.  My inner C programmer cringes at the thought of a method having
-      one of multiple potential return types (gross abuses of void* be damned).
-    '''''''''''''''''''''
-    - Return the empty string if the command succeeds, some nonempty string
-      if not.
-
-      Advantage: This is a direct subscript into the errortext dict on a verb.
-
-      Disadvantage: Again, it is counterintuitive to return a truthy value if
-      we are in an error condition and it is doubly counterintuitive to return
-      a falsy value if the command succeeds!
-    '''''''''''''''''''''
-    - Re-raise caught exceptions and make NVVerb.invoke deal with it.
-    
-      Advantage: No fucking around with return types - I can still return a
-      truthy value if the command succeeds.  It's elegant and arguably the most
-      Pythonic solution.  I'd have to learn more about how Python exceptions
-      work.
-
-      Disadvantage: Really wants custom exception classes.  I'd have to learn
-      more about how Python exceptions work.
-      
-      Note: I would want NVBadArgError, NVNoArgError, and NVBadTargetError at
-      the minimum.
-    """
     if lamp.is_lit():
         raise NVGameStateError("light", "cannot light already lit lamp")
     else:
