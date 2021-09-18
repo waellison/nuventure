@@ -9,7 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-from nuventure.errors import NVBadArgError, NVBadTargetError, NVNoArgError, NVGameStateError
+from nuventure.errors import *
 from nuventure import ERROR_STR
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
@@ -60,6 +60,8 @@ class NVGame:
             print("this action is not implemented yet")
         except (KeyboardInterrupt, EOFError):
             do_quit()
+        except NVParseError:
+            return False
         else:
             if verb:
                 try:

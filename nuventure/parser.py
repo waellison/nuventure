@@ -13,7 +13,9 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import json
+from fuzzywuzzy import fuzz
 from typing import Callable
+from functools import cmp_to_key
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nuventure import ERROR_STR
 from nuventure.actor import NVActor
@@ -28,6 +30,10 @@ SIMPLE_ACTIONS = {
     "inventory", "look", "east", "north", "south",
     "west", "up", "down", "quit", "dig",
     "iddqd", "xyzzy", "idkfa", "arkhtos"
+}
+
+CHEAT_ACTIONS = {
+    "iddqd", "idkfa", "xyzzy", "arkhtos"
 }
 
 """Terminals denoting item-bearing actions (i.e., verbs of the third type,
@@ -135,6 +141,49 @@ class NVVerb:
             return f"{self.invoker} invokes {self.callback}"
 
 
+def _compare_candidate_match(c1, c2):
+    return c1[0] - c2[0]
+
+
+def _dwim(input, verbs=ALL_VERBS):
+    """
+    Ascertain potentially meant verbs from erroneous user input.
+
+    Args:
+        input: the user's input string
+        verbs: a container of potential matches (defaults to a
+            set containing all verbs understoood by Nuventure)
+
+    Returns:
+        Nothing.
+
+    Raises:
+        NVParseError with the output of this function, which is caught
+        in NVGame._do_input_loop.
+    """
+    candidates = []
+
+    # Check the match ratio between our input and each potential match.
+    # Then, add that to a list of candidates as a tuple with the ratio
+    # first and the potential match second.
+    for verb in verbs:
+        if verb in CHEAT_ACTIONS:
+            continue
+        ratio = fuzz.ratio(input, verb)
+        candidate = (ratio, verb)
+        candidates.append(candidate)
+
+    # Reverse-sort the candidates list to get a list of the matches
+    # from best to worst.
+    dwim = sorted(candidates,
+                  key=cmp_to_key(_compare_candidate_match),
+                  reverse=True)
+
+    # Now print just the top three such matches.
+    print(f"I don't understand \"{input}\"; did you mean:")
+    [print(f"    {can[1]}") for can in dwim[:3]]
+
+
 class NVParser:
     """
     NVParser is responsible for handling input from the user and converting
@@ -214,11 +263,16 @@ class NVParser:
             return None
 
         # Verify that the user's input even contains a valid verb before
-        # proceeding.
+        # proceeding.  Use fuzzy matching to propose potential matches if
+        # an invalid input is given, but just return None if there is no
+        # input at all.
         input_string = input_string.lower()
         tokens = input_string.split()
-        if (len(tokens) == 0) or (not tokens[0] in ALL_VERBS):
+        if len(tokens) == 0:
             return None
+        elif not tokens[0] in ALL_VERBS:
+            _dwim(tokens[0])
+            raise NVParseError(tokens[0])
 
         # The "help" bareword is a special case since it does not need to
         # invoke a callback.  The "help" bareword is the "fifth type" of
@@ -231,6 +285,8 @@ class NVParser:
         if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
 
+        # Make it a (mostly) valid English sentence and then hand it over to
+        # the real parser.
         input_string = "I " + input_string
         return self.do_hard_parse(input_string)
 
@@ -361,4 +417,3 @@ class NVParser:
             print(output)
         else:
             print(ERROR_STR)
-
