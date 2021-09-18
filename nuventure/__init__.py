@@ -10,6 +10,7 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import sys
+import textwrap
 
 """The permissible directions of travel within the Nuventure engine."""
 DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
@@ -18,6 +19,10 @@ DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
 ERROR_STR = "Huh?"
 
 DEBUG_MODE = True
+
+
+def nv_print(text, width=72):
+    print(*textwrap.wrap(text, width), sep="\n")
 
 
 def func_name():

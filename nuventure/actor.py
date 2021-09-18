@@ -9,8 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-import textwrap
-from nuventure import dbg_print, func_name
+from nuventure import dbg_print, func_name, nv_print
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
 
@@ -87,9 +86,7 @@ class NVActor:
             raise NVBadArgError(direction, direction)
 
         if result and self.actor_type == "player":
-            print(*textwrap.wrap(prev_loc.neighbors[direction]["travel_description"],
-                                 width=72), sep="\n")
-            print("")
+            nv_print(prev_loc.neighbors[direction]["travel_description"])
             self.location.render()
         return result
 
@@ -117,7 +114,7 @@ class NVActor:
             dbg_print(
                 func_name(), f"dropping item {item.internal_name} from owner {self}")
             item.drop(self)
-            print(
+            nv_print(
                 f"You remove the {item.friendly_name} from your pack and set it aside.")
             del self.inventory[item.internal_name]
             return True

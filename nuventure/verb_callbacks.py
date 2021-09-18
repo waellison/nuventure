@@ -114,9 +114,9 @@ def do_drop(actor: NVActor, target, _):
 def do_inventory(actor: NVActor, *_):
     """Show the player's inventory, if there is anything in it."""
     if len(actor.inventory):
-        print("\nYour Inventory:")
+        nv_print("\nYour Inventory:")
         for item in actor.inventory.values():
-            print(item.short_render())
+            nv_print(item.short_render())
         return True
 
     raise NVNoArgError("inventory")
@@ -158,9 +158,13 @@ def do_extinguish(actor: NVActor, target, _):
 
 
 def do_arkhtos(*_):
-    print("You have won!  Please visit https://python.org to collect your prize.\n")
-    print("Spoiler: Your prize is a free download, no strings attached, of the")
-    print("Python programming language, which was used to implement this game.")
+    msg = """
+You have won!  Please visit https://python.org to collect your prize.
+
+Spoiler: Your prize is a free download, no strings attached, of the
+Python programming language, which was used to implement this game.
+"""
+    nv_print(msg)
     do_quit()
 
 

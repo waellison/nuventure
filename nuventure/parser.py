@@ -17,7 +17,7 @@ from functools import cmp_to_key
 from typing import Callable
 from fuzzywuzzy import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
-from nuventure import ERROR_STR
+from nuventure import ERROR_STR, nv_print
 from nuventure.actor import NVActor
 from nuventure.verb_callbacks import *
 from nuventure.errors import NVParseError
@@ -92,7 +92,7 @@ def _get_callback(verb):
             raise NotImplementedError(f"need to write {cbk_name}")
     else:
         raise RuntimeError(
-            f"Catastrophic failure (cannot add nonexistent verb '{verb}')")
+            f"Catastrophic failure (cannot find callback for verb '{verb}')")
     return cbk
 
 
@@ -127,7 +127,7 @@ class NVVerb:
         # Don't give away the cheat codes (which have no helptext obviously)
         if self.helptext:
             if not verbose:
-                print(f"{self.name:15}{self.helptext}")
+                nv_print(f"{self.name:15}{self.helptext}")
             else:
                 raise NotImplementedError(
                     "verbose help is not yet implemented")
@@ -180,7 +180,7 @@ def _dwim(input, verbs=ALL_VERBS):
                   reverse=True)
 
     # Now print just the top three such matches.
-    print(f"I don't understand \"{input}\"; did you mean:")
+    nv_print(f"I don't understand \"{input}\"; did you mean:")
     [print(f"    {can[1]}") for can in dwim[:3]]
 
 
@@ -310,7 +310,7 @@ class NVParser:
             try:
                 self.verbs[help_word].help()
             except KeyError:
-                print(f"nonexistent command \"{help_word}\"")
+                nv_print(f"nonexistent command \"{help_word}\"")
         else:
             for verb in self.verbs.values():
                 verb.help()
@@ -398,9 +398,9 @@ class NVParser:
         """
         verb = self.verbs.get(whoopsie, None)
         if verb:
-            print(verb.errortext)
+            nv_print(verb.errortext)
         else:
-            print(ERROR_STR)
+            nv_print(ERROR_STR)
 
     def rich_error(self, whoopsie: str, which: str, target=None):
         """
@@ -414,6 +414,6 @@ class NVParser:
                 output = estring.format(target)
             else:
                 output = verb.errortext.get(which, ERROR_STR)
-            print(output)
+            nv_print(output)
         else:
-            print(ERROR_STR)
+            nv_print(ERROR_STR)

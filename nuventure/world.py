@@ -9,10 +9,9 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-import textwrap
 import json
 import random
-from nuventure import dbg_print, func_name
+from nuventure import nv_print, dbg_print, func_name
 from nuventure.item import NVItem, NVWeapon, NVSpellbook, NVLamp
 from nuventure.actor import NVActor
 
@@ -69,14 +68,14 @@ class NVWorldNode:
             statefulp: True if the description should be the one triggered by
                 the required state, False otherwise."""
         length = "long" if longp or not self.visitedp else "short"
-        print(self.friendly_name)
-        print(*textwrap.wrap(self.describe(length, statefulp)), sep="\n")
+        nv_print(self.friendly_name)
+        nv_print(self.describe(length, statefulp))
 
         for actor in self.npcs:
-            print(actor.description)
+            nv_print(actor.description)
 
         for item in self.items:
-            print(item.look_description)
+            nv_print(item.look_description)
 
     def describe(self, length="long", statefulp=False):
         """Prints a description of the given node.
@@ -179,17 +178,18 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        # dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
+        dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
 
         for actor in self.actors.values():
-            # dbg_print(func_name(), f"actor: {actor.internal_name}")
+            dbg_print(func_name(), f"actor: {actor.internal_name}")
             if actor == self.game_instance.player:
                 continue
 
             for _ in range(0, actor.movement_rate):
                 directions = actor.location.neighbors.keys()
                 thisway = random.choice(directions)
-                # dbg_print(func_name(), f"moving {actor.internal_name} toward {thisway}")
+                dbg_print(
+                    func_name(), f"moving {actor.internal_name} toward {thisway}")
                 movement = self.game_instance.parser.verbs[thisway]
                 movement.invoker = actor
                 movement.invoke()

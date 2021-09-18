@@ -9,7 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-from nuventure import ERROR_STR, dbg_print, func_name
+from nuventure import ERROR_STR, dbg_print, func_name, nv_print
 from nuventure.errors import NVParseError, NVBadTargetError, \
     NVBadArgError, NVNoArgError, NVGameStateError
 from nuventure.world import NVWorld
@@ -50,17 +50,16 @@ class NVGame:
         if last:
             self.parser.error(last.split(" ")[0])
         else:
-            print(ERROR_STR)
+            nv_print(ERROR_STR)
 
     def _do_input_loop(self):
         """Accept input from the user and process it."""
         self.player.location.visitedp = True
-        print("")
 
         try:
             verb = self.parser.read_command(self.player)
         except NotImplementedError:
-            print("this action is not implemented yet")
+            nv_print("this action is not implemented yet")
         except (KeyboardInterrupt, EOFError):
             do_quit()
         except NVParseError:
@@ -74,7 +73,7 @@ class NVGame:
                 except NVNoArgError as ex:
                     self.parser.rich_error(ex.verb, "noargs")
                 except NVGameStateError as ex:
-                    print(ex.what)
+                    nv_print(ex.what)
                 else:
                     return result
             else:
