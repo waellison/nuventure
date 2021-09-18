@@ -9,8 +9,9 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-from nuventure.errors import *
-from nuventure import ERROR_STR
+from nuventure import ERROR_STR, dbg_print, func_name
+from nuventure.errors import NVParseError, NVBadTargetError, \
+    NVBadArgError, NVNoArgError, NVGameStateError
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
 from nuventure.parser import NVParser
@@ -44,6 +45,8 @@ class NVGame:
     def _do_parse_error(self):
         """Issue a parse error."""
         last = self.parser.last_command
+        dbg_print(func_name(), "reached the last-ditch error handler")
+        dbg_print(func_name(), f"(last input is '{last}')")
         if last:
             self.parser.error(last.split(" ")[0])
         else:
