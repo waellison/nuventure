@@ -13,9 +13,9 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import json
-from fuzzywuzzy import fuzz
-from typing import Callable
 from functools import cmp_to_key
+from typing import Callable
+from fuzzywuzzy import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nuventure import ERROR_STR
 from nuventure.actor import NVActor
