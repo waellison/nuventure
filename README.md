@@ -7,17 +7,18 @@ process of implementing this, and I will be documenting selected aspects
 of the program's creation on my tech blog at some point; my blog is currently
 under reconstruction.
 
-To run, you need NLTK: `pip install nltk`.  Once installed, you need to
-install a corpus as described [on the NLTK site][0]:
+Update the requirements (NLTK and numpy) by running `pip install -r
+requirements.txt`.  This will install them if not present and update
+them to the latest version if they are present.
+
+Once `pip` has done its thing, you need to install an NLTK corpus (as
+detailed on the [official NLTK site][0]):
 
 ```
 zsh$ python
 >>> import nltk
 >>> nltk.download()
 ```
-
-You may need to install `numpy` as well, as NLTK cites it as a requirement
-but does not install it: `pip install numpy`.
 
 Given how small the input language for Nuventure is, it should suffice
 to install any (English-language) corpus; I wrote and tested with the
