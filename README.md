@@ -16,8 +16,17 @@ zsh$ python
 >>> nltk.download()
 ```
 
+You may need to install `numpy` as well, as NLTK cites it as a requirement
+but does not install it: `pip install numpy`.
+
 Given how small the input language for Nuventure is, it should suffice
 to install any (English-language) corpus; I wrote and tested with the
 `popular` package.
+
+If you want to read the original design document for this program, you will
+need a LaTeX compiler.  I use and suggest the [TeXLive][0] distribution
+which is available for all modern platforms and comes with an editor, the
+needed compilers, and output generation into PDF.  The built PDF is
+available at <https://rt38.net/crap/nuventure-design.pdf>.
 
 [0]: https://nltk.org
