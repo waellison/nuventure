@@ -13,6 +13,7 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import sys
+from nuventure import nv_print
 from nuventure.actor import NVActor
 from nuventure.item import NVLamp
 from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError
