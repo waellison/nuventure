@@ -19,52 +19,41 @@ from nuventure.item import NVLamp
 from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError
 
 
-def do_east(actor: NVActor, *_):
-    """Move the player to the east."""
+def _do_move(actor: NVActor, direction: str) -> bool:
     try:
-        return actor.move("east")
+        return actor.move(direction)
     except NVBadArgError:
         raise
+
+
+def do_east(actor: NVActor, *_):
+    """Move the player to the east."""
+    return _do_move(actor, "east")
 
 
 def do_west(actor: NVActor, *_):
     """Move the player to the west."""
-    try:
-        return actor.move("west")
-    except NVBadArgError:
-        raise
+    return _do_move(actor, "west")
 
 
 def do_north(actor: NVActor, *_):
     """Move the player to the north."""
-    try:
-        return actor.move("north")
-    except NVBadArgError:
-        raise
+    return _do_move(actor, "north")
 
 
 def do_up(actor: NVActor, *_):
     """Move the player up."""
-    try:
-        return actor.move("up")
-    except NVBadArgError:
-        raise
+    return _do_move(actor, "up")
 
 
 def do_down(actor: NVActor, *_):
     """Move the player down."""
-    try:
-        return actor.move("down")
-    except NVBadArgError:
-        raise
+    return _do_move(actor, "down")
 
 
 def do_south(actor: NVActor, *_):
     """Move the player to the south."""
-    try:
-        return actor.move("south")
-    except NVBadArgError:
-        raise
+    return _do_move(actor, "south")
 
 
 def do_look(actor: NVActor, *_):
@@ -89,8 +78,10 @@ def do_inspect(actor: NVActor, target, _):
 
 
 def do_take(actor: NVActor, target, _):
-    """Take an item from the scene and put it in the player's inventory,
-    if it exists in the same cell as the player."""
+    """
+    Take an item from the scene and put it in the player's inventory,
+    if it exists in the same cell as the player.
+    """
     here = actor.location
     try:
         target_itm = actor.bound_world.items.get(target, None)
@@ -103,8 +94,10 @@ def do_take(actor: NVActor, target, _):
 
 
 def do_drop(actor: NVActor, target, _):
-    """Take an item from the player's inventory and place it in the cell
-    where the player is."""
+    """
+    Take an item from the player's inventory and place it in the cell
+    where the player is.
+    """
     try:
         target_itm = actor.inventory[target]
     except KeyError:
@@ -113,7 +106,9 @@ def do_drop(actor: NVActor, target, _):
 
 
 def do_inventory(actor: NVActor, *_):
-    """Show the player's inventory, if there is anything in it."""
+    """
+    Show the player's inventory, if there is anything in it.
+    """
     if len(actor.inventory):
         nv_print("\nYour Inventory:")
         for item in actor.inventory.values():
@@ -124,7 +119,9 @@ def do_inventory(actor: NVActor, *_):
 
 
 def do_light(actor: NVActor, target, _):
-    """Light the player's lamp, if the player has it and it is not lit."""
+    """
+    Light the player's lamp, if the player has it and it is not lit.
+    """
     try:
         lamp = actor.inventory[target]
         assert(isinstance(lamp, NVLamp))
@@ -141,7 +138,9 @@ def do_light(actor: NVActor, target, _):
 
 
 def do_extinguish(actor: NVActor, target, _):
-    """Extinguish the player's lamp, if the player has it and it is lit."""
+    """
+    Extinguish the player's lamp, if the player has it and it is lit.
+    """
     try:
         lamp = actor.inventory[target]
         assert(isinstance(lamp, NVLamp))
@@ -170,4 +169,5 @@ Python programming language, which was used to implement this game.
 
 
 def do_quit(*_):
+    """Quit the game."""
     sys.exit(0)
