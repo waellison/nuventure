@@ -44,15 +44,19 @@ class NVGame:
 
     def _do_parse_error(self):
         """Issue a parse error."""
-        last = self.parser.last_command
+        last = self.parser.last_command.split(" ")
         if last:
-            self.parser.error(last.split(" ")[0])
+            if last[0] != "help":
+                self.parser.error(last[0])
+            elif last[0] == "help":
+                return
         else:
             nv_print(ERROR_STR)
 
     def _do_input_loop(self):
         """Accept input from the user and process it."""
         self.player.location.visitedp = True
+        print(" ")
 
         try:
             verb = self.parser.read_command(self.player)
