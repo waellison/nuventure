@@ -17,9 +17,9 @@ from functools import cmp_to_key
 from typing import Callable
 from fuzzywuzzy import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
+from nuventure.verb_callbacks import *
 from nuventure import ERROR_STR, nv_print
 from nuventure.actor import NVActor
-from nuventure.verb_callbacks import *
 from nuventure.errors import NVParseError
 
 VERB_PREFIX = "do_"
@@ -27,11 +27,15 @@ VERB_PREFIX = "do_"
 """Terminals denoting simple actions (i.e., verbs of the fourth type, which
 do not require targets)."""
 SIMPLE_ACTIONS = {
-    "inventory", "look", "east", "north", "south",
-    "west", "up", "down", "quit", "dig",
-    "iddqd", "xyzzy", "idkfa", "arkhtos"
+    "inventory", "look", "quit", "dig", "iddqd", "xyzzy", "idkfa", "arkhtos"
 }
 
+"""Terminals denoting movement directions (i.e., verbs of the sixth type)"""
+DIRECTIONS = {
+    "north", "south", "east", "west", "up", "down"
+}
+
+"""Terminals denoting cheat actions or victory conditions."""
 CHEAT_ACTIONS = {
     "iddqd", "idkfa", "xyzzy", "arkhtos"
 }
@@ -63,14 +67,15 @@ HELP_ACTION = {"help"}
 """A set of all verbs, which is a simple union of the five types of verb
 terminals recognized by Nuventure."""
 ALL_VERBS = SIMPLE_ACTIONS | TARGET_ACTIONS_TARGET_FIRST \
-    | TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | HELP_ACTION
+    | TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | HELP_ACTION \
+    | DIRECTIONS
 
 """A set of the verbs which require a target."""
 ALL_TARGETED_VERBS = TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | \
     TARGET_ACTIONS_TARGET_FIRST
 
 
-def _get_callback(verb):
+def _get_callback(verb, cbk_name):
     """
     Retrieve a callback from the global namespace.
 
@@ -84,15 +89,11 @@ def _get_callback(verb):
         `RuntimeError` if the verb is not listed in `ALL_VERBS` even if
             a callback exists
     """
-    cbk_name = VERB_PREFIX + verb
-    if verb in ALL_VERBS:
-        if cbk_name in globals():
-            cbk = globals()[cbk_name]
-        else:
-            raise NotImplementedError(f"need to write {cbk_name}")
+    if cbk_name in globals():
+        cbk = globals()[cbk_name]
     else:
         raise RuntimeError(
-            f"Catastrophic failure (cannot find callback for verb '{verb}')")
+            f"Catastrophic failure (cannot find callback for verb '{verb}'; {cbk_name} was passed)")
     return cbk
 
 
@@ -207,12 +208,12 @@ class NVParser:
             helptext = rest["helptext"]
             errtext = rest["errortext"]
 
+            cbk = _get_callback(verb, rest["callback"])
+
             if "aliases" in rest.keys():
                 for alias in rest["aliases"]:
-                    cbk = _get_callback(alias)
                     self.verbs[alias] = NVVerb(alias, cbk, helptext, errtext)
             else:
-                cbk = _get_callback(verb)
                 self.verbs[verb] = NVVerb(verb, cbk, helptext, errtext)
 
     def read_command(self, actor):
@@ -281,9 +282,15 @@ class NVParser:
             return self.do_help(input_string)
 
         # Simple actions require no arguments.  These are considered to be
-        # the "fourth type" of verbs in Nuventure.
+        # the "fourth type" of verbs in Nuventure.  The compass directions
+        # are a special case of this, since they all invoke the "move" method,
+        # with the name of the direction as its "target."
         if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
+        elif input_string in DIRECTIONS:
+            vb = self.verbs[tokens[0]]
+            vb.target = tokens[0]
+            return vb
 
         # Make it a (mostly) valid English sentence and then hand it over to
         # the real parser.
@@ -325,7 +332,6 @@ class NVParser:
             it exists and the input is valid, None otherwise.
         """
         target = None
-        action = None
         implement = None
         noun_candidates = []
 
@@ -341,7 +347,6 @@ class NVParser:
         # NNS.
         for i in entities:
             if i[1] in {"VBP", "VBD"}:
-                action = _get_callback(i[0])
                 verb = i[0]
             elif i[1] in {"NN", "JJ", "NNS"}:
                 noun_candidates.append(i[0])
@@ -389,7 +394,6 @@ class NVParser:
         retval = self.verbs[verb]
         retval.target = target
         retval.bound_item = implement
-        retval.callback = action
         return retval
 
     def error(self, whoopsie: str):

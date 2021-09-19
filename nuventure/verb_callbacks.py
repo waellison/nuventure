@@ -19,41 +19,11 @@ from nuventure.item import NVLamp
 from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError
 
 
-def _do_move(actor: NVActor, direction: str) -> bool:
+def do_move(actor: NVActor, direction: str, *_) -> bool:
     try:
         return actor.move(direction)
     except NVBadArgError:
         raise
-
-
-def do_east(actor: NVActor, *_):
-    """Move the player to the east."""
-    return _do_move(actor, "east")
-
-
-def do_west(actor: NVActor, *_):
-    """Move the player to the west."""
-    return _do_move(actor, "west")
-
-
-def do_north(actor: NVActor, *_):
-    """Move the player to the north."""
-    return _do_move(actor, "north")
-
-
-def do_up(actor: NVActor, *_):
-    """Move the player up."""
-    return _do_move(actor, "up")
-
-
-def do_down(actor: NVActor, *_):
-    """Move the player down."""
-    return _do_move(actor, "down")
-
-
-def do_south(actor: NVActor, *_):
-    """Move the player to the south."""
-    return _do_move(actor, "south")
 
 
 def do_look(actor: NVActor, *_):
@@ -157,15 +127,18 @@ def do_extinguish(actor: NVActor, target, _):
         return True
 
 
-def do_arkhtos(*_):
-    msg = """
-You have won!  Please visit https://python.org to collect your prize.
+def do_arkhtos(actor: NVActor, *_):
+    world = actor.bound_world
+    if world.nodes["DEST"].visitedp:
+        msg = """You have won!  Please visit https://python.org to collect your prize.
 
 Spoiler: Your prize is a free download, no strings attached, of the
 Python programming language, which was used to implement this game.
 """
-    nv_print(msg)
-    do_quit()
+        nv_print(msg)
+        do_quit()
+    else:
+        raise NVGameStateError("arkhtos", "Stop trying to cheat.")
 
 
 def do_quit(*_):

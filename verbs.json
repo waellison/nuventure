@@ -11,15 +11,18 @@
         "helptext": "Move in the specified direction.",
         "errortext": {
             "badarg": "Can't go {0}."
-        }
+        },
+        "callback": "do_move"
     },
     "help": {
         "helptext": "Show this help.",
-        "errortext": null
+        "errortext": null,
+        "callback": "do_help"
     },
     "look": {
         "helptext": "Describe the current location.",
-        "errortext": null
+        "errortext": null,
+        "callback": "do_look"
     },
     "inspect": {
         "helptext": "Inspect the specified item.",
@@ -27,33 +30,38 @@
             "noargs": "You didn't specify anything to inspect.",
             "badarg": "There is no {0} here to inspect.",
             "badtgt": "There is no {0} here to inspect."
-        }
+        },
+        "callback": "do_inspect"
     },
     "quit": {
         "helptext": "Quits the program.",
-        "errortext": null
+        "errortext": null,
+        "callback": "do_quit"
     },
     "take": {
         "helptext": "Put the specified object in the inventory.",
         "errortext": {
             "noargs": "There's nothing to take.",
             "badarg": "There is no {0} in the scene.",
-            "badtgt": "There is no {0} in the scene."
-        }
+            "badtgt": "You cannot take the {0}."
+        },
+        "callback": "do_take"
     },
     "drop": {
         "helptext": "Drop the specified item from the inventory.",
         "errortext": {
             "noargs": "There's nothing to drop.",
             "badarg": "You do not have a {0} in your inventory.",
-            "badtgt": "You do not have a {0} in your inventory."
-        }
+            "badtgt": "You cannot drop the {0}."
+        },
+        "callback": "do_drop"
     },
     "inventory": {
         "helptext": "View your inventory.",
         "errortext": {
             "noargs": "You have no items."
-        }
+        },
+        "callback": "do_inventory"
     },
     "light": {
         "helptext": "Light the lamp, if you have it.",
@@ -62,7 +70,8 @@
             "badarg": "I don't know how to light a {0}.",
             "badtgt": "You don't have a lamp.",
             "badstate": "The lamp is already lit."
-        }
+        },
+        "callback": "do_light"
     },
     "extinguish": {
         "helptext": "Extinguish the lamp, if you have it.",
@@ -71,12 +80,14 @@
             "badarg": "I don't know how to extinguish a {0}.",
             "badtgt": "You don't have a lamp.",
             "badstate": "The lamp is already extinguished."
-        }
+        },
+        "callback": "do_extinguish"
     },
     "arkhtos": {
         "helptext": null,
         "errortext": {
-            "cellnotseen": "Stop trying to cheat."
-        }
+            "badstate": "Stop trying to cheat."
+        },
+        "callback": "do_arkhtos"
     }
 }

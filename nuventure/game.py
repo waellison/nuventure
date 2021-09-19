@@ -73,7 +73,7 @@ class NVGame:
                 except NVNoArgError as ex:
                     self.parser.rich_error(ex.verb, "noargs")
                 except NVGameStateError as ex:
-                    nv_print(ex.what)
+                    self.parser.rich_error(ex.verb, "badstate")
                 else:
                     return result
             else:
