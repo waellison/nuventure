@@ -9,9 +9,11 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
+import random
 from nuventure import dbg_print, func_name, nv_print
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
+from nuventure.verb_callbacks import do_quit
 
 ACTOR_TYPES = {"player", "npc"}
 
@@ -24,7 +26,7 @@ class NVActor:
     current gametic.
     """
 
-    def __init__(self, bound_world, location, iname="PLAYER", name="Adventurer", hp=100, actor_type="player", movement_rate=1):
+    def __init__(self, bound_world, location, iname="PLAYER", name="Adventurer", hp=100, movement_rate=1):
         """Create a new actor object.
 
         Args:
@@ -33,7 +35,6 @@ class NVActor:
             iname: the internal name of this actor (defaults to "PLAYER")
             name: the name of this actor (defaults to "Adventurer")
             hp: the amount of hit points to give this character (defaults to 100)
-            actor_type: the type of actor this is (player or NPC)
             movement_rate: the actor's movement rate (defaults to 1 node per gametic)
         """
         self.internal_name = iname
@@ -43,12 +44,6 @@ class NVActor:
         self.hit_points = hp
         self.inventory = {}
         self.description = None
-
-        if actor_type in ACTOR_TYPES:
-            self.actor_type = actor_type
-        else:
-            raise KeyError(
-                f"invalid actor type for actor {self.internal_name}")
 
         self.movement_rate = movement_rate
 
@@ -69,7 +64,28 @@ class NVActor:
 
     def is_dead(self):
         """Returns whether the character is dead."""
-        return self.hit_points == 0
+        return self.hit_points <= 0
+
+    def is_npc(self):
+        return not self.internal_name == "PLAYER"
+
+    def do_tic(self):
+        dbg_print(func_name(), f"doing tic for {self}")
+        if self.is_dead():
+            if self.is_npc():
+                dbg_print(func_name(), f"{self} has died, removing from map")
+                del self.bound_world.actors[self]
+            else:
+                nv_print("You have died.")
+                do_quit()
+        else:
+            if self.is_npc():
+                for _ in range(0, self.movement_rate):
+                    directions = list(self.location.neighbors.keys())
+                    thisway = random.choice(directions)
+                    movement = self.bound_world.game_instance.parser.verbs[thisway]
+                    movement.invoker = self
+                    movement.invoke()
 
     def move(self, direction):
         """Attempts to move the actor within the world map.
@@ -86,7 +102,7 @@ class NVActor:
         if not result:
             raise NVBadArgError(direction, direction)
 
-        if result and self.actor_type == "player":
+        if result and not self.is_npc():
             nv_print(prev_loc.neighbors[direction]["travel_description"])
             self.location.render()
         return result
