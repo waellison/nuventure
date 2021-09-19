@@ -104,7 +104,8 @@ class NVVerb:
     Verbs represent permissible actions in the Nuventure engine.  A
     given NVVerb is bound to the actor that invokes it, the world object
     in which it is invoked, and the item and target, if needed; they are
-    set to None otherwise before NVVerb.invoke is called."""
+    set to None otherwise before NVVerb.invoke is called.
+    """
 
     def __init__(self, name: str, callback: Callable[[NVActor, any, any], None],
                  helptext: str, errortext: str):
@@ -276,7 +277,8 @@ class NVParser:
         # Simple actions require no arguments.  These are considered to be
         # the "fourth type" of verbs in Nuventure.  The compass directions
         # are a special case of this, since they all invoke the "move" method,
-        # with the name of the direction as its "target."
+        # with the name of the direction as its "target;" because of this
+        # special handling, they are the "sixth type" of verbs in Nuventure.
         if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
         elif input_string in DIRECTIONS:
@@ -333,10 +335,21 @@ class NVParser:
 
         # Each entity in the input sentence is tagged by what it is.
         # These are just tuples contained within a list.
+        #
         # Verbs are the heads of verb phrases, hence they are marked
-        # by VBP.  We can attempt to retrieve the pertinent callback
-        # and then check the nouns.  These are labeled with NN, JJ, or
-        # NNS.
+        # by VBP.  We will later attempt to retrieve the relevant verb
+        # from the parser's verb table, but for now it suffices just
+        # to pick it from the input text.
+        #
+        # There are potentially multiple nouns in an input sentence,
+        # and we select them from the entity list by looking at the
+        # tag which they have been given: NN, JJ, or NNS.
+        #
+        # Note for future reference:
+        # Proper names of people are handled differently and are
+        # tagged with the tuple `(PERSON, PersonName/NNP)`; as such,
+        # they need special handling when the speak, steal, buy, and
+        # and sell actions are implemented.
         for i in entities:
             if i[1] in {"VBP", "VBD"}:
                 verb = i[0]
@@ -350,15 +363,19 @@ class NVParser:
         #
         # If there is only one argument to a given verb, then we assume
         # it to be the target.  This is the third type of verb in the
-        # Nuventure engine.  Verbs of the fourth and fifth types are
-        # handled in NVParser.do_parse, as they do not require NLTK to
-        # aid in parsing.
+        # Nuventure engine.  Verbs of the fourth, fifth, and sixth types
+        # are handled in NVParser.do_parse, as they do not require NLTK
+        # to aid in parsing.
         #
         # An example of the first type is "unlock the door with the key".
         # An example of the second type is "cast fire on the goblin".
         # An example of the third type is "extinguish the lamp".
         #
         # If parsing the argument list fails, error and return None.
+        # There are three possible error states: if an argument is
+        # is required but none is supplied (or too many are supplied);
+        # if one argument is given but two are required; and if too
+        # many arguments are given to a verb that only requires one.
         if len(noun_candidates) == 2:
             if verb in TARGET_ACTIONS_IMPL_FIRST:
                 implement = noun_candidates[0]
@@ -381,8 +398,8 @@ class NVParser:
                 return None
 
         # Once the type of verb and arguments have been determined,
-        # pull the appropriate verb and set its target, implement ("bound
-        # item"), and callback appropriately, then return it to the caller.
+        # pull the appropriate verb and set its target and bound item
+        # appropriately, then return it to the caller for invocation.
         retval = self.verbs[verb]
         retval.target = target
         retval.bound_item = implement
