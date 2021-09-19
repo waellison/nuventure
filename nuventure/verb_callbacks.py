@@ -14,19 +14,18 @@ in the LICENSE file at the root directory of this distribution.
 
 import sys
 from nuventure import nv_print
-from nuventure.actor import NVActor
 from nuventure.item import NVLamp
 from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError
 
 
-def do_move(actor: NVActor, direction: str, *_) -> bool:
+def do_move(actor, direction: str, *_) -> bool:
     try:
         return actor.move(direction)
     except NVBadArgError:
         raise
 
 
-def do_look(actor: NVActor, *_) -> bool:
+def do_look(actor, *_) -> bool:
     """Print a description of the cell where the player is."""
     print_state = False
     if actor.location.wanted_state == "lamp_lit":
@@ -37,7 +36,7 @@ def do_look(actor: NVActor, *_) -> bool:
     return True
 
 
-def do_inspect(actor: NVActor, target: str, _) -> bool:
+def do_inspect(actor, target: str, _) -> bool:
     """Inspect an item in the same cell as the player."""
     here = actor.location
     target_itm = actor.bound_world.items[target]
@@ -47,7 +46,7 @@ def do_inspect(actor: NVActor, target: str, _) -> bool:
     raise NVBadArgError("inspect", target)
 
 
-def do_take(actor: NVActor, target: str, _) -> bool:
+def do_take(actor, target: str, _) -> bool:
     """
     Take an item from the scene and put it in the player's inventory,
     if it exists in the same cell as the player.
@@ -63,7 +62,7 @@ def do_take(actor: NVActor, target: str, _) -> bool:
     return actor.add_item(target_itm)
 
 
-def do_drop(actor: NVActor, target: str, _) -> bool:
+def do_drop(actor, target: str, _) -> bool:
     """
     Take an item from the player's inventory and place it in the cell
     where the player is.
@@ -75,7 +74,7 @@ def do_drop(actor: NVActor, target: str, _) -> bool:
     return actor.drop_item(target_itm)
 
 
-def do_inventory(actor: NVActor, *_) -> bool:
+def do_inventory(actor, *_) -> bool:
     """
     Show the player's inventory, if there is anything in it.
     """
@@ -88,7 +87,7 @@ def do_inventory(actor: NVActor, *_) -> bool:
     raise NVNoArgError("inventory")
 
 
-def do_light(actor: NVActor, target: str, _) -> bool:
+def do_light(actor, target: str, _) -> bool:
     """
     Light the player's lamp, if the player has it and it is not lit.
     """
@@ -101,13 +100,13 @@ def do_light(actor: NVActor, target: str, _) -> bool:
         return NVBadTargetError("light", target)
 
     if lamp.is_lit():
-        raise NVGameStateError("light", "cannot light already lit lamp")
+        raise NVGameStateError("light")
     else:
         lamp.use()
         return True
 
 
-def do_extinguish(actor: NVActor, target, _):
+def do_extinguish(actor, target: str, _) -> bool:
     """
     Extinguish the player's lamp, if the player has it and it is lit.
     """
@@ -120,14 +119,13 @@ def do_extinguish(actor: NVActor, target, _):
         raise NVBadTargetError("extinguish", target)
 
     if not lamp.is_lit():
-        raise NVGameStateError(
-            "extinguish", "cannot extinguish already extinguished lamp")
+        raise NVGameStateError("extinguish")
     else:
         lamp.use()
         return True
 
 
-def do_arkhtos(actor: NVActor, *_):
+def do_arkhtos(actor, *_) -> None:
     world = actor.bound_world
     if world.nodes["DEST"].visitedp:
         msg = """You have won!  Please visit https://python.org to collect your prize.
@@ -138,9 +136,9 @@ Python programming language, which was used to implement this game.
         nv_print(msg)
         do_quit()
     else:
-        raise NVGameStateError("arkhtos", "Stop trying to cheat.")
+        raise NVGameStateError("arkhtos")
 
 
-def do_quit(*_):
+def do_quit(*_) -> None:
     """Quit the game."""
     sys.exit(0)
