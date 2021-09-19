@@ -18,10 +18,12 @@ DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
 """The default error string for parse errors."""
 ERROR_STR = "Huh?"
 
+"""Whether debug output should be enabled."""
 DEBUG_MODE = True
 
 
 def nv_print(text, width=72):
+    """Pretty-print long text to a narrow screen (default width: 72 chars)."""
     print(*textwrap.wrap(text, width), sep="\n")
 
 
