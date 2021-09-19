@@ -19,6 +19,7 @@ from nuventure.errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGa
 
 
 def do_move(actor, direction: str, *_) -> bool:
+    """Attempt to move the given character in the specified direction."""
     try:
         return actor.move(direction)
     except NVBadArgError:
@@ -80,7 +81,7 @@ def do_inventory(actor, *_) -> bool:
     """
     if actor.inventory:
         nv_print("\nYour Inventory:")
-        [nv_print(item.short_render) for item in actor.inventory.values()]
+        _ = [nv_print(item.short_render) for item in actor.inventory.values()]
         return True
 
     raise NVNoArgError("inventory")
@@ -125,6 +126,7 @@ def do_extinguish(actor, target: str, _) -> bool:
 
 
 def do_arkhtos(actor, *_) -> None:
+    """Trigger the game's win condition."""
     world = actor.bound_world
     if world.nodes["DEST"].visitedp:
         msg = """You have won!  Please visit https://python.org to collect your prize.
