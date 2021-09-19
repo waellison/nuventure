@@ -222,7 +222,7 @@ class NVParser:
         Raises:
             RuntimeError: if an NPC is passed as the invoking actor
         """
-        if actor.actor_type != "player":
+        if actor.internal_name != "PLAYER":
             raise RuntimeError(
                 "Non-player characters should not invoke interactive commands")
 
