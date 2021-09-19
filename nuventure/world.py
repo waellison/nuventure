@@ -82,8 +82,6 @@ class NVWorldNode:
             for item in self.items:
                 nv_print(item.look_description)
 
-        print("")
-
     def describe(self, length="long", statefulp=False):
         """Prints a description of the given node.
 
