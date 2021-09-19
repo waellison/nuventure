@@ -114,6 +114,7 @@ class NVLamp(NVItem):
         self.lit_state = False
 
     def use(self):
+        """Trigger the lit state of the lamp."""
         if self.lit_state:
             self.lit_state = False
             nv_print(self.use_description[1])
@@ -122,11 +123,19 @@ class NVLamp(NVItem):
             nv_print(self.use_description[0])
 
     def is_lit(self):
+        """Return whether the lamp is lit."""
         return self.lit_state
 
 
 class NVWeapon(NVItem):
+    """
+    A Weapon is an item that allows the player to harm non-player characters.
+    """
+
     def __init__(self, iname: str, dbinfo: dict, world):
+        """
+        Create a new weapon.
+        """
         super().__init__(iname, dbinfo, world)
         try:
             self.power = dbinfo["power"]
@@ -136,21 +145,32 @@ class NVWeapon(NVItem):
                 "error: cannot init a weapon without specifying attack power or use string")
 
     def use(self, other):
+        """Use the weapon on the specified actor."""
         if not other:
             return -1
-        else:
-            other.injure(self.power)
-            return self.power
+
+        other.injure(self.power)
+        return self.power
 
 
 class NVSpellbook(NVItem):
+    """
+    A Spellbook is an item that allows the player to learn a spell.
+    It is consumed upon use.
+    """
+
     def __init__(self, iname: str, dbinfo: dict, world):
+        """
+        Create a new spellbook.
+        """
         super().__init__(iname, dbinfo, world)
         self.info = dbinfo
         self.spell = None
 
     def use(self, user):
+        """Confer the spell in the spellbook on the user, if the user does
+        not already know it."""
         if self.spell not in user.spells:
-            return user.confer_spell(self.spell)
-        else:
-            return False
+            if user.confer_spell(self.spell):
+                return user.drop(self)
+        return False
