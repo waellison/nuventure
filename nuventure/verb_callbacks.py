@@ -79,7 +79,7 @@ def do_inventory(actor: NVActor, *_) -> bool:
     """
     Show the player's inventory, if there is anything in it.
     """
-    if len(actor.inventory):
+    if actor.inventory:
         nv_print("\nYour Inventory:")
         for item in actor.inventory.values():
             nv_print(item.short_render())

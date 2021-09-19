@@ -68,14 +68,21 @@ class NVWorldNode:
             statefulp: True if the description should be the one triggered by
                 the required state, False otherwise."""
         length = "long" if longp or not self.visitedp else "short"
+        print("")
         nv_print(self.friendly_name)
         nv_print(self.describe(length, statefulp))
 
-        for actor in self.npcs:
-            nv_print(actor.description)
+        if self.npcs:
+            print("")
+            for actor in self.npcs:
+                nv_print(actor.description)
 
-        for item in self.items:
-            nv_print(item.look_description)
+        if self.items:
+            print("")
+            for item in self.items:
+                nv_print(item.look_description)
+
+        print("")
 
     def describe(self, length="long", statefulp=False):
         """Prints a description of the given node.
@@ -178,18 +185,13 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        dbg_print(func_name(), f"doing gametic with {len(self.actors)} actors")
-
         for actor in self.actors.values():
-            dbg_print(func_name(), f"actor: {actor.internal_name}")
             if actor == self.game_instance.player:
                 continue
 
             for _ in range(0, actor.movement_rate):
                 directions = actor.location.neighbors.keys()
                 thisway = random.choice(directions)
-                dbg_print(
-                    func_name(), f"moving {actor.internal_name} toward {thisway}")
                 movement = self.game_instance.parser.verbs[thisway]
                 movement.invoker = actor
                 movement.invoke()

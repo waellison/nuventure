@@ -7,7 +7,6 @@ charset-normalizer==2.0.4
 click==8.0.1
 colorama==0.4.4
 coverage==5.5
-fuzzywuzzy==0.18.0
 hjson==3.0.2
 idna==3.2
 iniconfig==1.1.1
@@ -31,6 +30,7 @@ python-tr==0.1.2
 regex==2021.8.28
 requests==2.26.0
 smartypants==2.0.1
+thefuzz==0.19.0
 toml==0.10.2
 tqdm==4.62.2
 urllib3==1.26.6

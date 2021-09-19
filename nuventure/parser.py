@@ -15,7 +15,7 @@ in the LICENSE file at the root directory of this distribution.
 import json
 from functools import cmp_to_key
 from typing import Callable
-from fuzzywuzzy import fuzz
+from thefuzz import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
 from nuventure.verb_callbacks import *
 from nuventure import ERROR_STR, nv_print
@@ -133,20 +133,12 @@ class NVVerb:
                 raise NotImplementedError(
                     "verbose help is not yet implemented")
 
-    def __str__(self):
-        if self.target and self.bound_item:
-            return f"{self.invoker} invokes {self.callback} on {self.target} with {self.bound_item}"
-        if self.target:
-            return f"{self.invoker} invokes {self.callback} on {self.target}"
-        else:
-            return f"{self.invoker} invokes {self.callback}"
-
 
 def _compare_candidate_match(c1, c2):
     return c1[0] - c2[0]
 
 
-def _dwim(input, verbs=ALL_VERBS):
+def _dwim(in_str, verbs=ALL_VERBS):
     """
     Ascertain potentially meant verbs from erroneous user input.
 
@@ -170,7 +162,7 @@ def _dwim(input, verbs=ALL_VERBS):
     for verb in verbs:
         if verb in CHEAT_ACTIONS:
             continue
-        ratio = fuzz.ratio(input, verb)
+        ratio = fuzz.ratio(in_str, verb)
         candidate = (ratio, verb)
         candidates.append(candidate)
 
@@ -181,7 +173,7 @@ def _dwim(input, verbs=ALL_VERBS):
                   reverse=True)
 
     # Now print just the top three such matches.
-    nv_print(f"I don't understand \"{input}\"; did you mean:")
+    nv_print(f"I don't understand \"{in_str}\"; did you mean:")
     [print(f"    {can[1]}") for can in dwim[:3]]
 
 
@@ -269,7 +261,7 @@ class NVParser:
         # input at all.
         input_string = input_string.lower()
         tokens = input_string.split()
-        if len(tokens) == 0:
+        if not tokens:
             return None
         elif not tokens[0] in ALL_VERBS:
             _dwim(tokens[0])

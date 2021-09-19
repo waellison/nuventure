@@ -37,7 +37,7 @@ class NVActor:
             movement_rate: the actor's movement rate (defaults to 1 node per gametic)
         """
         self.internal_name = iname
-        self.name = name
+        self.friendly_name = name
         self.bound_world = bound_world
         self.location = location
         self.hit_points = hp
@@ -47,13 +47,14 @@ class NVActor:
         if actor_type in ACTOR_TYPES:
             self.actor_type = actor_type
         else:
-            raise KeyError(f"invalid actor type for actor {self.name}")
+            raise KeyError(
+                f"invalid actor type for actor {self.internal_name}")
 
         self.movement_rate = movement_rate
 
     def __str__(self):
         """Returns the actor's name."""
-        return self.name
+        return self.friendly_name
 
     def injure(self, amount=5):
         """Injures an actor, detracting the specified amount of HP.
@@ -96,9 +97,6 @@ class NVActor:
         Args:
             item: the item to add to the inventory"""
         if item:
-            dbg_print(
-                func_name(), f"taking item {item.internal_name} for owner {self}")
-            item.take(self)
             self.inventory[item.internal_name] = item
             return True
 
@@ -111,8 +109,6 @@ class NVActor:
         Args:
             item: the item to drop"""
         if self.inventory.get(item.internal_name):
-            dbg_print(
-                func_name(), f"dropping item {item.internal_name} from owner {self}")
             item.drop(self)
             nv_print(
                 f"You remove the {item.friendly_name} from your pack and set it aside.")
