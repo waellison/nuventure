@@ -10,8 +10,7 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 import json
-import random
-from nuventure import nv_print, dbg_print, func_name
+from nuventure import nv_print
 from nuventure.item import NVItem, NVWeapon, NVSpellbook, NVLamp
 from nuventure.actor import NVActor
 
@@ -103,8 +102,8 @@ class NVWorldNode:
         """
         if statefulp is True:
             return self.descriptions[f"{length}_stateful"]
-        else:
-            return self.descriptions[length]
+
+        return self.descriptions[length]
 
     def add_item(self, item: NVItem) -> None:
         """Adds an item to the given node.
@@ -115,6 +114,11 @@ class NVWorldNode:
 
 
 class NVWorld:
+    """
+    NVWorld represents the world where the game takes place.  A world
+    consists of its nodes, items, and actors.
+    """
+
     def __init__(self, game_instance, pathname="./world.json"):
         """Creates a new game world, populating its nodes.
 
@@ -173,13 +177,13 @@ class NVWorld:
             dest_node = self.nodes[loc.neighbors[direction]["name"]]
             actor.location = dest_node
             return True
-        else:
-            return False
 
-    def do_world_tic(self) -> None:
+        return False
+
+    def do_world_tic(self):
         """Do a tic within the world.
 
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        [actor.do_tic() for actor in self.actors.values()]
+        return [actor.do_tic() for actor in self.actors.values()]
