@@ -97,6 +97,7 @@ class NVActor:
         Args:
             item: the item to add to the inventory"""
         if item:
+            item.take(self)
             self.inventory[item.internal_name] = item
             return True
 
