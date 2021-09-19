@@ -63,13 +63,15 @@ class NVActor:
         return self.is_dead()
 
     def is_dead(self):
-        """Returns whether the character is dead."""
+        """Returns whether the actor is dead."""
         return self.hit_points <= 0
 
     def is_npc(self):
-        return not self.internal_name == "PLAYER"
+        """Returns whether the actor is a player character."""
+        return self.internal_name != "PLAYER"
 
     def do_tic(self):
+        """Do this actor's tic during the world tic."""
         dbg_print(func_name(), f"doing tic for {self}")
         if self.is_dead():
             if self.is_npc():
