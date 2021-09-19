@@ -9,7 +9,7 @@ Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
 
-from nuventure import ERROR_STR, dbg_print, func_name, nv_print
+from nuventure import ERROR_STR, nv_print
 from nuventure.errors import NVParseError, NVBadTargetError, \
     NVBadArgError, NVNoArgError, NVGameStateError
 from nuventure.world import NVWorld
