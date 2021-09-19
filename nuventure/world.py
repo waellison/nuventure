@@ -137,8 +137,7 @@ class NVWorld:
             iname = key
             fname = value["friendlyName"]
 
-            actor = NVActor(self, where, iname, fname,
-                            100, "npc", movement_rate)
+            actor = NVActor(self, where, iname, fname, 100, movement_rate)
             actor.description = value["inSceneDescription"]
             self.actors[iname] = actor
             self.nodes[value["originCell"]].npcs.append(actor)
@@ -183,13 +182,4 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        for actor in self.actors.values():
-            if actor == self.game_instance.player:
-                continue
-
-            for _ in range(0, actor.movement_rate):
-                directions = actor.location.neighbors.keys()
-                thisway = random.choice(directions)
-                movement = self.game_instance.parser.verbs[thisway]
-                movement.invoker = actor
-                movement.invoke()
+        [actor.do_tic() for actor in self.actors.values()]
