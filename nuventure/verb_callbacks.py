@@ -80,8 +80,7 @@ def do_inventory(actor, *_) -> bool:
     """
     if actor.inventory:
         nv_print("\nYour Inventory:")
-        for item in actor.inventory.values():
-            nv_print(item.short_render())
+        [nv_print(item.short_render) for item in actor.inventory.values()]
         return True
 
     raise NVNoArgError("inventory")
