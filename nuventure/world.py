@@ -51,11 +51,11 @@ class NVWorldNode:
                 "travel_description": neighbor["travelDescription"]
             }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns the node's internal name."""
         return self.internal_name
 
-    def render(self, longp=False, statefulp=False):
+    def render(self, longp=False, statefulp=False) -> str:
         """Print an appropriate description of the given node.
 
         If the node is marked as visited, then we want the brief description,
@@ -101,7 +101,7 @@ class NVWorldNode:
         else:
             return self.descriptions[length]
 
-    def add_item(self, item: NVItem):
+    def add_item(self, item: NVItem) -> None:
         """Adds an item to the given node.
 
         Args:
@@ -149,14 +149,14 @@ class NVWorld:
 
         self.game_instance = game_instance
 
-    def add_actor(self, actor):
+    def add_actor(self, actor) -> None:
         """Adds an actor to the world.
 
         Args:
             actor: the Actor object to add"""
         self.actors[actor.internal_name] = actor
 
-    def try_move(self, actor, direction):
+    def try_move(self, actor: NVActor, direction: str) -> bool:
         """Attempts to move an actor within the world.
 
         Arguments:
@@ -172,7 +172,7 @@ class NVWorld:
         else:
             return False
 
-    def do_world_tic(self):
+    def do_world_tic(self) -> None:
         """Do a tic within the world.
 
         For each gametic, actors may move the number of nodes specified by
