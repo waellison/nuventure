@@ -26,7 +26,7 @@ def do_move(actor: NVActor, direction: str, *_) -> bool:
         raise
 
 
-def do_look(actor: NVActor, *_):
+def do_look(actor: NVActor, *_) -> bool:
     """Print a description of the cell where the player is."""
     print_state = False
     if actor.location.wanted_state == "lamp_lit":
@@ -37,7 +37,7 @@ def do_look(actor: NVActor, *_):
     return True
 
 
-def do_inspect(actor: NVActor, target, _):
+def do_inspect(actor: NVActor, target: str, _) -> bool:
     """Inspect an item in the same cell as the player."""
     here = actor.location
     target_itm = actor.bound_world.items[target]
@@ -47,7 +47,7 @@ def do_inspect(actor: NVActor, target, _):
     raise NVBadArgError("inspect", target)
 
 
-def do_take(actor: NVActor, target, _):
+def do_take(actor: NVActor, target: str, _) -> bool:
     """
     Take an item from the scene and put it in the player's inventory,
     if it exists in the same cell as the player.
@@ -63,7 +63,7 @@ def do_take(actor: NVActor, target, _):
     return actor.add_item(target_itm)
 
 
-def do_drop(actor: NVActor, target, _):
+def do_drop(actor: NVActor, target: str, _) -> bool:
     """
     Take an item from the player's inventory and place it in the cell
     where the player is.
@@ -75,7 +75,7 @@ def do_drop(actor: NVActor, target, _):
     return actor.drop_item(target_itm)
 
 
-def do_inventory(actor: NVActor, *_):
+def do_inventory(actor: NVActor, *_) -> bool:
     """
     Show the player's inventory, if there is anything in it.
     """
@@ -88,7 +88,7 @@ def do_inventory(actor: NVActor, *_):
     raise NVNoArgError("inventory")
 
 
-def do_light(actor: NVActor, target, _):
+def do_light(actor: NVActor, target: str, _) -> bool:
     """
     Light the player's lamp, if the player has it and it is not lit.
     """
