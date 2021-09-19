@@ -66,7 +66,6 @@ class NVGameStateError(Exception):
     encounters an invalid state.
     """
 
-    def __init__(self, verb, what):
+    def __init__(self, verb):
         super().__init__()
         self.verb = verb
-        self.what = what
