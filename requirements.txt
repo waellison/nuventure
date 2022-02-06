@@ -21,7 +21,6 @@ pep8==1.7.1
 pluggy==0.13.1
 py==1.10.0
 pycodestyle==2.7.0
-pygame==2.0.1
 pylint==2.9.6
 pyparsing==2.4.7
 pytest==6.2.4

@@ -13,7 +13,6 @@ import random
 from nuventure import dbg_print, func_name, nv_print
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
-from nuventure.verb_callbacks import do_quit
 
 ACTOR_TYPES = {"player", "npc"}
 
@@ -79,7 +78,7 @@ class NVActor:
                 del self.bound_world.actors[self]
             else:
                 nv_print("You have died.")
-                do_quit()
+                do_exit
         else:
             if self.is_npc():
                 for _ in range(0, self.movement_rate):

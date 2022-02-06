@@ -89,5 +89,12 @@
             "badstate": "Stop trying to cheat."
         },
         "callback": "do_arkhtos"
+    },
+    "xyzzy": {
+        "helptext": null,
+        "errortext": {
+            "badstate": "Stop trying to cheat."
+        },
+        "callback": "do_xyzzy"
     }
 }

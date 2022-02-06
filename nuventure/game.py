@@ -14,8 +14,7 @@ from nuventure.errors import NVParseError, NVBadTargetError, \
     NVBadArgError, NVNoArgError, NVGameStateError
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
-from nuventure.parser import NVParser
-from nuventure.verb_callbacks import do_quit
+from nuventure.parser import NVParser, do_quit
 
 
 class NVGame:
