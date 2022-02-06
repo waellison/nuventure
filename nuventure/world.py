@@ -22,20 +22,20 @@ class NVWorldNode:
     nodes, which in technical terms is a directed graph.
     """
 
-    def __init__(self, iname: str, dbinfo: dict):
+    def __init__(self, i_name: str, dbinfo: dict):
         """Create a new map node.
 
         Args:
-            iname: the internal name of the node, from the JSON file
+            i_name: the internal name of the node, from the JSON file
             dbinfo: the information from the JSON file regarding this node
         """
-        self.internal_name = iname
+        self.internal_name = i_name
         self.friendly_name = dbinfo["friendlyName"]
         self.items = []
         self.neighbors = {}
         self.descriptions = {}
         self.npcs = []
-        self.visitedp = False
+        self.visited_p = False
         self.wanted_state = dbinfo["requiresState"]
 
         self.descriptions["long"] = dbinfo["longDescription"]
@@ -50,11 +50,11 @@ class NVWorldNode:
                 "travel_description": neighbor["travelDescription"]
             }
 
-    def __str__(self) -> str:
+    def __str__(self):
         """Returns the node's internal name."""
         return self.internal_name
 
-    def render(self, longp=False, statefulp=False) -> str:
+    def render(self, long_p=False, stateful_p=False) -> None:
         """Print an appropriate description of the given node.
 
         If the node is marked as visited, then we want the brief description,
@@ -62,14 +62,14 @@ class NVWorldNode:
         scene.
 
         Args:
-            longp: True if the long description should be printed, False
+            long_p: True if the long description should be printed, False
                 otherwise.
-            statefulp: True if the description should be the one triggered by
+            stateful_p: True if the description should be the one triggered by
                 the required state, False otherwise."""
-        length = "long" if longp or not self.visitedp else "short"
+        length = "long" if long_p or not self.visited_p else "short"
         print("")
         nv_print(self.friendly_name)
-        nv_print(self.describe(length, statefulp))
+        nv_print(self.describe(length, stateful_p))
 
         if self.npcs:
             print("")
@@ -81,7 +81,7 @@ class NVWorldNode:
             for item in self.items:
                 nv_print(item.look_description)
 
-    def describe(self, length="long", statefulp=False):
+    def describe(self, length="long", stateful_p=False):
         """Prints a description of the given node.
 
         Nodes have either two or four descriptions: a long description to be
@@ -90,17 +90,17 @@ class NVWorldNode:
         been visited before, upon revisiting it.
 
         The stateful descriptions, triggered by calling this method with
-        statefulp set to True, are printed when entering the node with the
+        stateful_p set to True, are printed when entering the node with the
         required state (Node.required_state) activated, e.g. when the player's
         lamp is turned on and the player enters a darkened cell.
 
         Arguments:
             length: one of "long" or "short", indicating the desired length
-            statefulp: whether this is the description to be printed
+            stateful_p: whether this is the description to be printed
                 after the required state of this node is triggered
                 (defaults to False)
         """
-        if statefulp is True:
+        if stateful_p is True:
             return self.descriptions[f"{length}_stateful"]
 
         return self.descriptions[length]
@@ -138,21 +138,21 @@ class NVWorld:
         for key, value in rawdata["npcs"].items():
             movement_rate = value["movementRate"]
             where = self.nodes[value["originCell"]]
-            iname = key
-            fname = value["friendlyName"]
+            i_name = key
+            f_name = value["friendlyName"]
 
-            actor = NVActor(self, where, iname, fname, 100, movement_rate)
+            actor = NVActor(self, where, i_name, f_name, 100, movement_rate)
             actor.description = value["inSceneDescription"]
-            self.actors[iname] = actor
+            self.actors[i_name] = actor
             self.nodes[value["originCell"]].npcs.append(actor)
 
         for key, value in rawdata["items"].items():
-            itypes = {
+            i_types = {
                 "lamp": NVLamp,
                 "weapon": NVWeapon,
                 "spellbook": NVSpellbook
             }
-            klass = itypes.get(value["type"], NVItem)
+            klass = i_types.get(value["type"], NVItem)
             self.items[key] = klass(key, value, self)
 
         self.game_instance = game_instance
@@ -174,8 +174,8 @@ class NVWorld:
         loc = actor.location
 
         if direction in loc.neighbors:
-            dest_node = self.nodes[loc.neighbors[direction]["name"]]
-            actor.location = dest_node
+            destination_node = self.nodes[loc.neighbors[direction]["name"]]
+            actor.location = destination_node
             return True
 
         return False

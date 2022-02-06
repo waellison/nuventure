@@ -19,7 +19,7 @@ DIRECTIONS = {"east", "down", "up", "north", "west", "south"}
 ERROR_STR = "Huh?"
 
 """Whether debug output should be enabled."""
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 def nv_print(text, width=72):

@@ -121,7 +121,7 @@ class NVVerb:
     def invoke(self):
         """Invokes the verb's bound callback.  The callback is selected and
         bound by the parsing routine."""
-        return self.callback(self.invoker, self.target, self.bound_item)
+        return self.callback(self)
 
     def help(self, verbose=False):
         """Prints the verb's help text, if present."""
@@ -139,28 +139,22 @@ def _compare_candidate_match(c1, c2):
     return c1[0] - c2[0]
 
 
-def _dwim(in_str, verbs=ALL_VERBS):
+def _dwim(in_str):
     """
     Ascertain potentially meant verbs from erroneous user input.
 
     Args:
-        input: the user's input string
-        verbs: a container of potential matches (defaults to a
-            set containing all verbs understoood by Nuventure)
+        in_str: the user's input string
 
     Returns:
         Nothing.
-
-    Raises:
-        NVParseError with the output of this function, which is caught
-        in NVGame._do_input_loop.
     """
     candidates = []
 
     # Check the match ratio between our input and each potential match.
     # Then, add that to a list of candidates as a tuple with the ratio
     # first and the potential match second.
-    for verb in verbs:
+    for verb in ALL_VERBS:
         if verb in CHEAT_ACTIONS:
             continue
         ratio = fuzz.ratio(in_str, verb)
@@ -228,7 +222,7 @@ class NVParser:
 
         try:
             tmp = input("> ")
-        except EOFError:
+        except (EOFError, KeyboardInterrupt):
             do_quit()
         else:
             self.last_command = tmp
@@ -299,7 +293,8 @@ class NVParser:
         Args:
             in_str: the input string to show the help string for.
 
-        Returns: Nothing
+        Returns:
+            Nothing
         """
         tokens = in_str.split(" ", maxsplit=2)
         help_word = None
@@ -321,10 +316,14 @@ class NVParser:
         Invokes the "real" parsing routine for more complex commands.
         This uses NLTK to create a parse tree from the user's input.
 
+        Args:
+            input_string: The user's input string as typed.
+
         Returns:
-            The NVVerb object corresponding to the player's input if
+            The `NVVerb` object corresponding to the player's input if
             it exists and the input is valid, None otherwise.
         """
+        verb = None
         target = None
         implement = None
         noun_candidates = []
@@ -360,6 +359,10 @@ class NVParser:
         # those that accept the target first (the "first type"), and
         # those that accept the "implement" (an item or spell) first
         # (the "second type").  Here we determine which applies.
+        #
+        # In linguistic terms this is the position of the direct and
+        # indirect (if present) objects within the input sentence, and
+        # which word is which.
         #
         # If there is only one argument to a given verb, then we assume
         # it to be the target.  This is the third type of verb in the

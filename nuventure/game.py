@@ -55,7 +55,7 @@ class NVGame:
 
     def _do_input_loop(self):
         """Accept input from the user and process it."""
-        self.player.location.visitedp = True
+        self.player.location.visited_p = True
         print(" ")
 
         try:
