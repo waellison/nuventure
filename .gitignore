@@ -138,3 +138,6 @@ dmypy.json
 *.out
 *.pdf
 *.synctex.gz
+
+# macOS droppings
+.DS_Store
