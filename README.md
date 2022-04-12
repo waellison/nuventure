@@ -1,6 +1,6 @@
 # nuventure
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7edeaead0a114735b54bd55d83a6ac86)](https://app.codacy.com/gh/tnwae/nuventure?utm_source=github.com&utm_medium=referral&utm_content=tnwae/nuventure&utm_campaign=Badge_Grade_Settings)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0f7bbe0f12034ba998ce1a0d73ff72a3)](https://www.codacy.com/gh/waellison/nuventure/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=waellison/nuventure&amp;utm_campaign=Badge_Grade)
 
 An interactive fiction engine written in Python.  I am currently in the
 process of implementing this, and I will be documenting selected aspects
