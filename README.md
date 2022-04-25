@@ -27,7 +27,6 @@ to install any (English-language) corpus; I wrote and tested with the
 If you want to read the original design document for this program, you will
 need a LaTeX compiler.  I use and suggest the [TeXLive][0] distribution
 which is available for all modern platforms and comes with an editor, the
-needed compilers, and output generation into PDF.  The built PDF is
-available at <https://rt38.net/crap/nuventure-design.pdf>.
+needed compilers, and output generation into PDF.
 
 [0]: https://nltk.org
