@@ -2,3 +2,10 @@
 pythonpath = [
   ".", "src",
 ]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
