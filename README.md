@@ -1,6 +1,7 @@
 # nuventure
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0f7bbe0f12034ba998ce1a0d73ff72a3)](https://www.codacy.com/gh/waellison/nuventure/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=waellison/nuventure&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/0f7bbe0f12034ba998ce1a0d73ff72a3)](https://www.codacy.com/gh/waellison/nuventure/dashboard?utm_source=github.com&utm_medium=referral&utm_content=waellison/nuventure&utm_campaign=Badge_Coverage)
 [![build](https://github.com/waellison/nuventure/actions/workflows/pytest.yml/badge.svg)](https://github.com/waellison/nuventure/actions/workflows/pytest.yml)
 [![License](https://img.shields.io/github/license/waellison/nuventure)](#)
 
