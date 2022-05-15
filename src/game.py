@@ -9,5 +9,5 @@ from nuventure.game import NVGame
 
 dbg_print("main", "this is Nuventure v0.1")
 
-GAME = NVGame("../data/dirtest.json")
+GAME = NVGame("../data")
 GAME.run()

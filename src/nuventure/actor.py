@@ -78,7 +78,7 @@ class NVActor:
                 del self.bound_world.actors[self]
             else:
                 nv_print("You have died.")
-                do_exit
+                do_exit()
         else:
             if self.is_npc():
                 for _ in range(0, self.movement_rate):
