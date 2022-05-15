@@ -183,7 +183,7 @@ class NVParser:
     game runner script.
     """
 
-    def __init__(self, verbtable="./verbs.json"):
+    def __init__(self, verbtable="../data/verbs.json"):
         """Create a new parser object and load the verbs from memory."""
         self.verbs = {}
         self.last_command = ""
@@ -468,41 +468,41 @@ def do_inspect(verb: NVVerb) -> bool:
     raise NVBadArgError("inspect", verb.target)
 
 
-def do_take(actor, target: str, _) -> bool:
+def do_take(verb: NVVerb) -> bool:
     """
     Take an item from the scene and put it in the player's inventory,
     if it exists in the same cell as the player.
     """
-    here = actor.location
+    here = verb.invoker.location
     try:
-        target_itm = actor.bound_world.items.get(target, None)
+        target_itm = verb.invoker.bound_world.items.get(verb.target, None)
         assert(target_itm.location == here)
     except (AssertionError, AttributeError):
         raise NVBadArgError("take", target) from None
     except KeyError:
         raise NVBadTargetError("take", target) from None
-    return actor.add_item(target_itm)
+    return verb.invoker.add_item(target_itm)
 
 
-def do_drop(actor, target: str, _) -> bool:
+def do_drop(verb: NVVerb) -> bool:
     """
     Take an item from the player's inventory and place it in the cell
     where the player is.
     """
     try:
-        target_itm = actor.inventory[target]
+        target_itm = verb.invoker.inventory[verb.target]
     except KeyError:
         raise NVBadArgError("drop", target)
-    return actor.drop_item(target_itm)
+    return verb.invoker.drop_item(target_itm)
 
 
-def do_inventory(actor, *_) -> bool:
+def do_inventory(verb: NVVerb) -> bool:
     """
     Show the player's inventory, if there is anything in it.
     """
-    if actor.inventory:
+    if verb.invoker.inventory:
         nv_print("\nYour Inventory:")
-        _ = [nv_print(item.short_render) for item in actor.inventory.values()]
+        _ = [nv_print(item.short_render()) for item in verb.invoker.inventory.values()]
         return True
 
     raise NVNoArgError("inventory")
