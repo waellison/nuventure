@@ -47,7 +47,7 @@ class NVWorldNode:
             neighbor = dbinfo["linkedNodes"].pop()
             self.neighbors[neighbor["direction"]] = {
                 "name": neighbor["name"],
-                "travel_description": neighbor["travelDescription"]
+                "travel_description": neighbor["travelDescription"],
             }
 
     def __str__(self):
@@ -147,11 +147,7 @@ class NVWorld:
             self.nodes[value["originCell"]].npcs.append(actor)
 
         for key, value in rawdata["items"].items():
-            i_types = {
-                "lamp": NVLamp,
-                "weapon": NVWeapon,
-                "spellbook": NVSpellbook
-            }
+            i_types = {"lamp": NVLamp, "weapon": NVWeapon, "spellbook": NVSpellbook}
             klass = i_types.get(value["type"], NVItem)
             self.items[key] = klass(key, value, self)
 

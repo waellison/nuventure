@@ -8,13 +8,13 @@ from nuventure.errors import NVBadArgError
 game_fixture = NVGame("data")
 
 actor_fixture = NVActor(
-                  game_fixture.world,
-                  game_fixture.start_node,
-                  iname="SIDEKICK",
-                  name="Alandar",
-                  hp=50,
-                  movement_rate=1
-                )
+    game_fixture.world,
+    game_fixture.start_node,
+    iname="SIDEKICK",
+    name="Alandar",
+    hp=50,
+    movement_rate=1,
+)
 
 item_fixture = NVLamp(
     iname="Test Lamp",
@@ -26,9 +26,9 @@ item_fixture = NVLamp(
         "useDescription": "You turn the lamp on.",
         "useAltDescription": "You turn the lamp off.",
         "originCell": "ORIGIN",
-        "originOwner": None
+        "originOwner": None,
     },
-    world=game_fixture.world
+    world=game_fixture.world,
 )
 
 

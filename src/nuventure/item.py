@@ -31,8 +31,7 @@ class NVItem:
         self.look_description = dbinfo["inSceneDescription"]
         self.long_description = dbinfo["longDescription"]
         self.take_description = dbinfo["takeDescription"] or None
-        self.use_description = [
-            dbinfo["useDescription"], dbinfo["useAltDescription"]]
+        self.use_description = [dbinfo["useDescription"], dbinfo["useAltDescription"]]
 
         self.location = world.nodes.get(dbinfo["originCell"], None)
 
@@ -142,7 +141,8 @@ class NVWeapon(NVItem):
             self.print_on_use = dbinfo["inducesState"][0]["description"]
         except KeyError:
             nv_print(
-                "error: cannot init a weapon without specifying attack power or use string")
+                "error: cannot init a weapon without specifying attack power or use string"
+            )
 
     def use(self, other):
         """Use the weapon on the specified actor."""

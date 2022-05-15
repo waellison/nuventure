@@ -22,7 +22,13 @@ from nltk import ne_chunk, pos_tag, word_tokenize
 
 from . import ERROR_STR, nv_print
 from .actor import NVActor
-from .errors import NVBadArgError, NVNoArgError, NVBadTargetError, NVGameStateError, NVParseError
+from .errors import (
+    NVBadArgError,
+    NVNoArgError,
+    NVBadTargetError,
+    NVGameStateError,
+    NVParseError,
+)
 from .item import NVLamp
 
 VERB_PREFIX = "do_"
@@ -30,38 +36,45 @@ VERB_PREFIX = "do_"
 """Terminals denoting simple actions (i.e., verbs of the fourth type, which
 do not require targets)."""
 SIMPLE_ACTIONS = {
-    "inventory", "look", "quit", "dig", "iddqd", "xyzzy", "idkfa", "arkhtos"
+    "inventory",
+    "look",
+    "quit",
+    "dig",
+    "iddqd",
+    "xyzzy",
+    "idkfa",
+    "arkhtos",
 }
 
 """Terminals denoting movement directions (i.e., verbs of the sixth type)"""
-DIRECTIONS = {
-    "north", "south", "east", "west", "up", "down"
-}
+DIRECTIONS = {"north", "south", "east", "west", "up", "down"}
 
 """Terminals denoting cheat actions or victory conditions."""
-CHEAT_ACTIONS = {
-    "iddqd", "idkfa", "xyzzy", "arkhtos"
-}
+CHEAT_ACTIONS = {"iddqd", "idkfa", "xyzzy", "arkhtos"}
 
 """Terminals denoting item-bearing actions (i.e., verbs of the third type,
 which only require a target)."""
 TARGET_ACTIONS_NO_IMPL = {
-    "inspect", "cast", "open", "close", "read",
-    "speak", "take", "steal", "drop", "light",
-    "extinguish"
+    "inspect",
+    "cast",
+    "open",
+    "close",
+    "read",
+    "speak",
+    "take",
+    "steal",
+    "drop",
+    "light",
+    "extinguish",
 }
 
 """Terminals denoting targeted actions where the item comes first and the
 target comes second (verbs of the second type)."""
-TARGET_ACTIONS_IMPL_FIRST = {
-    "buy", "sell", "cast", "insert", "remove"
-}
+TARGET_ACTIONS_IMPL_FIRST = {"buy", "sell", "cast", "insert", "remove"}
 
 """Terminals denoting targeted actions where the target comes first and the
 item comes second (verbs of the first type)."""
-TARGET_ACTIONS_TARGET_FIRST = {
-    "attack", "lock", "unlock"
-}
+TARGET_ACTIONS_TARGET_FIRST = {"attack", "lock", "unlock"}
 
 """The sole terminal denoting the help action, which is the only verb of the
 fifth type."""
@@ -69,13 +82,19 @@ HELP_ACTION = {"help"}
 
 """A set of all verbs, which is a simple union of the five types of verb
 terminals recognized by Nuventure."""
-ALL_VERBS = SIMPLE_ACTIONS | TARGET_ACTIONS_TARGET_FIRST \
-    | TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | HELP_ACTION \
+ALL_VERBS = (
+    SIMPLE_ACTIONS
+    | TARGET_ACTIONS_TARGET_FIRST
+    | TARGET_ACTIONS_IMPL_FIRST
+    | TARGET_ACTIONS_NO_IMPL
+    | HELP_ACTION
     | DIRECTIONS
+)
 
 """A set of the verbs which require a target."""
-ALL_TARGETED_VERBS = TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | \
-    TARGET_ACTIONS_TARGET_FIRST
+ALL_TARGETED_VERBS = (
+    TARGET_ACTIONS_IMPL_FIRST | TARGET_ACTIONS_NO_IMPL | TARGET_ACTIONS_TARGET_FIRST
+)
 
 
 def _get_callback(verb, cbk_name):
@@ -96,7 +115,8 @@ def _get_callback(verb, cbk_name):
         cbk = globals()[cbk_name]
     else:
         raise RuntimeError(
-            f"Catastrophic failure (cannot find callback for verb '{verb}'; {cbk_name} was passed)")
+            f"Catastrophic failure (cannot find callback for verb '{verb}'; {cbk_name} was passed)"
+        )
     return cbk
 
 
@@ -110,8 +130,13 @@ class NVVerb:
     set to None otherwise before NVVerb.invoke is called.
     """
 
-    def __init__(self, name: str, callback: Callable[[NVActor, any, any], None],
-                 helptext: str, errortext: str):
+    def __init__(
+        self,
+        name: str,
+        callback: Callable[[NVActor, any, any], None],
+        helptext: str,
+        errortext: str,
+    ):
         """Creates a new verb object."""
         self.name = name
         self.invoker = None
@@ -134,8 +159,7 @@ class NVVerb:
             if not verbose:
                 nv_print(f"{self.name:15}{self.helptext}")
             else:
-                raise NotImplementedError(
-                    "verbose help is not yet implemented")
+                raise NotImplementedError("verbose help is not yet implemented")
 
 
 def _compare_candidate_match(c1, c2):
@@ -166,12 +190,10 @@ def _dwim(in_str):
 
     # Reverse-sort the candidates list to get a list of the matches
     # from best to worst.
-    dwim = sorted(candidates,
-                  key=cmp_to_key(_compare_candidate_match),
-                  reverse=True)
+    dwim = sorted(candidates, key=cmp_to_key(_compare_candidate_match), reverse=True)
 
     # Now print just the top three such matches.
-    nv_print(f"I don't understand \"{in_str}\"; did you mean:")
+    nv_print(f'I don\'t understand "{in_str}"; did you mean:')
     [print(f"    {can[1]}") for can in dwim[:3]]
 
 
@@ -221,7 +243,8 @@ class NVParser:
         """
         if actor.internal_name != "PLAYER":
             raise RuntimeError(
-                "Non-player characters should not invoke interactive commands")
+                "Non-player characters should not invoke interactive commands"
+            )
 
         try:
             tmp = input("> ")
@@ -309,7 +332,7 @@ class NVParser:
             try:
                 self.verbs[help_word].help()
             except KeyError:
-                nv_print(f"nonexistent command \"{help_word}\"")
+                nv_print(f'nonexistent command "{help_word}"')
         else:
             for verb in self.verbs.values():
                 verb.help()
@@ -428,8 +451,7 @@ class NVParser:
         verb = self.verbs.get(whoopsie, None)
         if verb:
             if target:
-                estring = verb.errortext.get(
-                    which, ERROR_STR + " (target was: {0})")
+                estring = verb.errortext.get(which, ERROR_STR + " (target was: {0})")
                 output = estring.format(target)
             else:
                 output = verb.errortext.get(which, ERROR_STR)
@@ -437,7 +459,9 @@ class NVParser:
         else:
             nv_print(ERROR_STR)
 
+
 ############################## Callbacks ################################
+
 
 def do_move(verb: NVVerb) -> bool:
     """Attempt to move the given character in the specified direction."""
@@ -476,7 +500,7 @@ def do_take(verb: NVVerb) -> bool:
     here = verb.invoker.location
     try:
         target_itm = verb.invoker.bound_world.items.get(verb.target, None)
-        assert(target_itm.location == here)
+        assert target_itm.location == here
     except (AssertionError, AttributeError):
         raise NVBadArgError("take", target) from None
     except KeyError:
@@ -514,7 +538,7 @@ def do_light(verb: NVVerb) -> bool:
     """
     try:
         lamp = verb.invoker.inventory[verb.target]
-        assert(isinstance(lamp, NVLamp))
+        assert isinstance(lamp, NVLamp)
     except AssertionError:
         raise NVBadArgError("light", verb.target)
     except KeyError:
@@ -533,7 +557,7 @@ def do_extinguish(verb: NVVerb) -> bool:
     """
     try:
         lamp = verb.invoker.inventory[verb.target]
-        assert(isinstance(lamp, NVLamp))
+        assert isinstance(lamp, NVLamp)
     except AssertionError:
         raise NVBadArgError("extinguish", verb.target)
     except KeyError:
@@ -563,16 +587,17 @@ Python programming language, which was used to implement this game.
 
 def do_xyzzy(verb: NVVerb) -> None:
     """Trigger the game's loss condition."""
-    nv_print("""Your memory serves you well.
+    nv_print(
+        """Your memory serves you well.
 
 However, you choose poorly.  Goodbye.
 \n
 \nYou have died.
-""")
+"""
+    )
     do_quit()
 
 
 def do_quit(*_) -> None:
     """Quit the game."""
     sys.exit(0)
-

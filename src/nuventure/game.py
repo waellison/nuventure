@@ -10,8 +10,13 @@ in the LICENSE file at the root directory of this distribution.
 """
 
 from nuventure import ERROR_STR, nv_print
-from nuventure.errors import NVParseError, NVBadTargetError, \
-    NVBadArgError, NVNoArgError, NVGameStateError
+from nuventure.errors import (
+    NVParseError,
+    NVBadTargetError,
+    NVBadArgError,
+    NVNoArgError,
+    NVGameStateError,
+)
 from nuventure.world import NVWorld
 from nuventure.actor import NVActor
 from nuventure.parser import NVParser, do_quit

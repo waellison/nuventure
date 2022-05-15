@@ -25,7 +25,15 @@ class NVActor:
     current gametic.
     """
 
-    def __init__(self, bound_world, location, iname="PLAYER", name="Adventurer", hp=100, movement_rate=1):
+    def __init__(
+        self,
+        bound_world,
+        location,
+        iname="PLAYER",
+        name="Adventurer",
+        hp=100,
+        movement_rate=1,
+    ):
         """Create a new actor object.
 
         Args:
@@ -129,7 +137,8 @@ class NVActor:
         if self.inventory.get(item.internal_name):
             item.drop(self)
             nv_print(
-                f"You remove the {item.friendly_name} from your pack and set it aside.")
+                f"You remove the {item.friendly_name} from your pack and set it aside."
+            )
             del self.inventory[item.internal_name]
             return True
 
