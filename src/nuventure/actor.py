@@ -13,6 +13,7 @@ import random
 from nuventure import dbg_print, func_name, nv_print
 from nuventure.item import NVItem
 from nuventure.errors import NVBadArgError
+from nuventure.parser import do_quit
 
 ACTOR_TYPES = {"player", "npc"}
 
@@ -52,6 +53,9 @@ class NVActor:
         self.inventory = {}
         self.description = None
 
+        if self.is_npc():
+            self.bound_world.actors[self.internal_name] = self
+
         self.movement_rate = movement_rate
 
     def __str__(self):
@@ -83,10 +87,10 @@ class NVActor:
         if self.is_dead():
             if self.is_npc():
                 dbg_print(func_name(), f"{self} has died, removing from map")
-                del self.bound_world.actors[self]
+                del self.bound_world.actors[self.internal_name]
             else:
                 nv_print("You have died.")
-                do_exit()
+                do_quit()
         else:
             if self.is_npc():
                 for _ in range(0, self.movement_rate):
@@ -94,6 +98,7 @@ class NVActor:
                     thisway = random.choice(directions)
                     movement = self.bound_world.game_instance.parser.verbs[thisway]
                     movement.invoker = self
+                    movement.target = thisway
                     movement.invoke()
 
     def move(self, direction):

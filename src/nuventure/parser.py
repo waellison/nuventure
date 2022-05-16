@@ -21,7 +21,6 @@ from thefuzz import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
 
 from . import ERROR_STR, nv_print
-from .actor import NVActor
 from .errors import (
     NVBadArgError,
     NVNoArgError,
@@ -133,7 +132,7 @@ class NVVerb:
     def __init__(
         self,
         name: str,
-        callback: Callable[[NVActor, any, any], None],
+        callback,
         helptext: str,
         errortext: str,
     ):
