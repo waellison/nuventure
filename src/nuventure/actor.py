@@ -134,7 +134,7 @@ class NVActor:
 
         Args:
             item: the item to drop"""
-        if self.inventory.get(item.internal_name):
+        if item and self.inventory.get(item.internal_name):
             item.drop(self)
             nv_print(
                 f"You remove the {item.friendly_name} from your pack and set it aside."
