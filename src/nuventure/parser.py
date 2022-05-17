@@ -104,9 +104,6 @@ def _get_callback(verb, cbk_name):
         The callback function if found
 
     Raises:
-        `NotImplementedError` if the verb is listed in `ALL_VERBS` but
-            not implemented as a callback in the form of `do_{vname}`
-            for some verb name `vname`
         `RuntimeError` if the verb is not listed in `ALL_VERBS` even if
             a callback exists
     """
@@ -193,7 +190,11 @@ def _dwim(in_str):
 
     # Now print just the top three such matches.
     nv_print(f'I don\'t understand "{in_str}"; did you mean:')
-    [print(f"    {can[1]}") for can in dwim[:3]]
+
+    for can in dwim[:3]:
+        print(f"    {can[1]}")
+
+    return [can[1] for can in dwim[:3]]
 
 
 class NVParser:

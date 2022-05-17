@@ -182,4 +182,5 @@ class NVWorld:
         For each gametic, actors may move the number of nodes specified by
         their movement rate.  Movement direction is randomly chosen per move.
         """
-        return [actor.do_tic() for actor in self.actors.values()]
+        for actor in self.actors.values():
+            actor.do_tic()
