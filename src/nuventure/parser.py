@@ -16,7 +16,6 @@ import sys
 import json
 
 from functools import cmp_to_key
-from typing import Callable
 from thefuzz import fuzz
 from nltk import ne_chunk, pos_tag, word_tokenize
 
@@ -402,7 +401,7 @@ class NVParser:
         #
         # If parsing the argument list fails, error and return None.
         # There are three possible error states: if an argument is
-        # is required but none is supplied (or too many are supplied);
+        # required but none is supplied (or too many are supplied);
         # if one argument is given but two are required; and if too
         # many arguments are given to a verb that only requires one.
         if len(noun_candidates) == 2:
@@ -460,15 +459,12 @@ class NVParser:
             nv_print(ERROR_STR)
 
 
-############################## Callbacks ################################
-
-
 def do_move(verb: NVVerb) -> bool:
     """Attempt to move the given character in the specified direction."""
     try:
         return verb.invoker.move(verb.target)
-    except NVBadArgError:
-        raise
+    except NVBadArgError as ex:
+        raise NVBadArgError("move", verb.target) from ex
 
 
 def do_look(verb: NVVerb) -> bool:
@@ -476,7 +472,7 @@ def do_look(verb: NVVerb) -> bool:
     print_state = False
     if verb.invoker.location.wanted_state == "lamp_lit":
         lamp = verb.invoker.inventory.get("lamp")
-        if isinstance(lamp, NVLamp) and lamp.is_lit():
+        if lamp is NVLamp and lamp.is_lit():
             print_state = True
     verb.invoker.location.render(long_p=True, stateful_p=print_state)
     return True
@@ -501,11 +497,12 @@ def do_take(verb: NVVerb) -> bool:
     try:
         target_itm = verb.invoker.bound_world.items.get(verb.target, None)
         assert target_itm.location == here
-    except (AssertionError, AttributeError):
-        raise NVBadArgError("take", target) from None
-    except KeyError:
-        raise NVBadTargetError("take", target) from None
-    return verb.invoker.add_item(target_itm)
+    except (AssertionError, AttributeError) as ex:
+        raise NVBadArgError("take", verb.target) from ex
+    except KeyError as ex:
+        raise NVBadTargetError("take", verb.target) from ex
+    else:
+        return verb.invoker.add_item(target_itm)
 
 
 def do_drop(verb: NVVerb) -> bool:
@@ -515,9 +512,10 @@ def do_drop(verb: NVVerb) -> bool:
     """
     try:
         target_itm = verb.invoker.inventory[verb.target]
-    except KeyError:
-        raise NVBadArgError("drop", target)
-    return verb.invoker.drop_item(target_itm)
+    except KeyError as ex:
+        raise NVBadArgError("drop", verb.target) from ex
+    else:
+        return verb.invoker.drop_item(target_itm)
 
 
 def do_inventory(verb: NVVerb) -> bool:
@@ -526,7 +524,8 @@ def do_inventory(verb: NVVerb) -> bool:
     """
     if verb.invoker.inventory:
         nv_print("\nYour Inventory:")
-        _ = [nv_print(item.short_render()) for item in verb.invoker.inventory.values()]
+        for item in verb.invoker.inventory.values():
+            nv_print(item.short_render())
         return True
 
     raise NVNoArgError("inventory")
@@ -538,36 +537,36 @@ def do_light(verb: NVVerb) -> bool:
     """
     try:
         lamp = verb.invoker.inventory[verb.target]
-        assert isinstance(lamp, NVLamp)
-    except AssertionError:
-        raise NVBadArgError("light", verb.target)
-    except KeyError:
-        raise NVBadTargetError("light", verb.target)
+        assert lamp is NVLamp
+    except AssertionError as ex:
+        raise NVBadArgError("light", verb.target) from ex
+    except KeyError as ex:
+        raise NVBadTargetError("light", verb.target) from ex
 
     if lamp.is_lit():
         raise NVGameStateError("light")
-    else:
-        lamp.use()
-        return True
+
+    lamp.use()
+    return True
 
 
 def do_extinguish(verb: NVVerb) -> bool:
     """
-    Extinguish the player's lamp, if the player has it and it is lit.
+    Extinguish the player's lamp, if the player has it, and if it is lit.
     """
     try:
         lamp = verb.invoker.inventory[verb.target]
-        assert isinstance(lamp, NVLamp)
-    except AssertionError:
-        raise NVBadArgError("extinguish", verb.target)
-    except KeyError:
-        raise NVBadTargetError("extinguish", verb.target)
+        assert lamp is NVLamp
+    except AssertionError as ex:
+        raise NVBadArgError("extinguish", verb.target) from ex
+    except KeyError as ex:
+        raise NVBadTargetError("extinguish", verb.target) from ex
 
     if not lamp.is_lit():
         raise NVGameStateError("extinguish")
-    else:
-        lamp.use()
-        return True
+
+    lamp.use()
+    return True
 
 
 def do_arkhtos(verb: NVVerb) -> None:
@@ -585,7 +584,7 @@ Python programming language, which was used to implement this game.
         raise NVGameStateError("arkhtos")
 
 
-def do_xyzzy(verb: NVVerb) -> None:
+def do_xyzzy(*_) -> None:
     """Trigger the game's loss condition."""
     nv_print(
         """Your memory serves you well.
