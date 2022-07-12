@@ -129,7 +129,7 @@ class NVVerb:
         self,
         name: str,
         callback,
-        helptext: str,
+        help_text: str,
         errortext: str,
     ):
         """Creates a new verb object."""
@@ -138,7 +138,7 @@ class NVVerb:
         self.bound_item = None
         self.target = None
         self.callback = callback
-        self.helptext = helptext
+        self.help_text = help_text
         self.errortext = errortext
 
     def invoke(self):
@@ -150,9 +150,9 @@ class NVVerb:
         """Prints the verb's help text, if present."""
 
         # Don't give away the cheat codes (which have no helptext obviously)
-        if self.helptext:
+        if self.help_text:
             if not verbose:
-                nv_print(f"{self.name:15}{self.helptext}")
+                nv_print(f"{self.name:15}{self.help_text}")
             else:
                 raise NotImplementedError("verbose help is not yet implemented")
 
@@ -161,39 +161,42 @@ def _compare_candidate_match(c1, c2):
     return c1[0] - c2[0]
 
 
-def _dwim(in_str):
+def _dwim(user_input: str) -> list[str]:
     """
     Ascertain potentially meant verbs from erroneous user input.
 
     Args:
-        in_str: the user's input string
+        user_input [str]: the user's input string
 
     Returns:
-        Nothing.
+        A list of the top three candidates matching the input string.
     """
-    candidates = []
+    command_candidates = []
 
     # Check the match ratio between our input and each potential match.
     # Then, add that to a list of candidates as a tuple with the ratio
     # first and the potential match second.
+    #
+    # I believe that TheFuzz uses the Levenshtein distance for this
+    # but I am not certain without checking the documentation.
     for verb in ALL_VERBS:
         if verb in CHEAT_ACTIONS:
             continue
-        ratio = fuzz.ratio(in_str, verb)
-        candidate = (ratio, verb)
-        candidates.append(candidate)
+        ratio = fuzz.ratio(user_input, verb)
+        command_candidates.append((ratio, verb))
 
     # Reverse-sort the candidates list to get a list of the matches
     # from best to worst.
-    dwim = sorted(candidates, key=cmp_to_key(_compare_candidate_match), reverse=True)
+    dwim = sorted(command_candidates, key=cmp_to_key(_compare_candidate_match), reverse=True)
+    candidates = [candidate[1] for candidate in dwim[:3]]
 
     # Now print just the top three such matches.
-    nv_print(f'I don\'t understand "{in_str}"; did you mean:')
+    nv_print(f'I don\'t understand "{user_input}"; did you mean:')
 
-    for can in dwim[:3]:
-        print(f"    {can[1]}")
+    for candidate in candidates:
+        print(f"    {candidate}")
 
-    return [can[1] for can in dwim[:3]]
+    return candidates
 
 
 class NVParser:
