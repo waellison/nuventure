@@ -14,6 +14,7 @@ in the LICENSE file at the root directory of this distribution.
 
 import sys
 import json
+from typing import Callable, Tuple, Union
 
 from functools import cmp_to_key
 from thefuzz import fuzz
@@ -95,7 +96,7 @@ ALL_TARGETED_VERBS = (
 )
 
 
-def _get_callback(verb, cbk_name):
+def _get_callback(verb: str, cbk_name: str) -> Callable:
     """
     Retrieve a callback from the global namespace.
 
@@ -141,12 +142,12 @@ class NVVerb:
         self.help_text = help_text
         self.errortext = errortext
 
-    def invoke(self):
+    def invoke(self) -> Callable:
         """Invokes the verb's bound callback.  The callback is selected and
         bound by the parsing routine."""
         return self.callback(self)
 
-    def help(self, verbose=False):
+    def help(self, verbose=False) -> None:
         """Prints the verb's help text, if present."""
 
         # Don't give away the cheat codes (which have no helptext obviously)
@@ -157,7 +158,7 @@ class NVVerb:
                 raise NotImplementedError("verbose help is not yet implemented")
 
 
-def _compare_candidate_match(c1, c2):
+def _compare_candidate_match(c1: Tuple[int, str], c2: Tuple[int, str]) -> int:
     return c1[0] - c2[0]
 
 
@@ -207,11 +208,11 @@ class NVParser:
     game runner script.
     """
 
-    def __init__(self, verbtable="../data/verbs.json"):
+    def __init__(self, verb_table: str = "../data/verbs.json"):
         """Create a new parser object and load the verbs from memory."""
         self.verbs = {}
         self.last_command = ""
-        with open(verbtable, "r") as fh:
+        with open(verb_table, "r") as fh:
             db = json.load(fh)
 
         for verb, rest in db.items():
@@ -219,23 +220,24 @@ class NVParser:
             if verb == "help":
                 continue
 
-            helptext = rest["helptext"]
-            errtext = rest["errortext"]
+            help_text = rest["helptext"]
+            error_text = rest["errortext"]
 
-            cbk = _get_callback(verb, rest["callback"])
+            callback = _get_callback(verb, rest["callback"])
 
             if "aliases" in rest.keys():
                 for alias in rest["aliases"]:
-                    self.verbs[alias] = NVVerb(alias, cbk, helptext, errtext)
+                    self.verbs[alias] = NVVerb(alias, callback, help_text, error_text)
             else:
-                self.verbs[verb] = NVVerb(verb, cbk, helptext, errtext)
+                self.verbs[verb] = NVVerb(verb, callback, help_text, error_text)
 
-    def read_command(self, actor):
+    def read_command(self, actor) -> NVVerb:
         """Read a command from an actor.  The actor must be the player
         character.  If not, this command will raise an exception.
 
         Args:
             actor: the actor on whose behalf we are executing a command
+                (must be an NVActor instance)
 
         Returns: The NVVerb object corresponding to the entered command if
             the parse was successful, None otherwise.
@@ -243,6 +245,8 @@ class NVParser:
         Raises:
             RuntimeError: if an NPC is passed as the invoking actor
         """
+        tmp = ""
+
         if actor.internal_name != "PLAYER":
             raise RuntimeError(
                 "Non-player characters should not invoke interactive commands"
@@ -256,13 +260,14 @@ class NVParser:
             self.last_command = tmp
 
         action = self.do_parse(tmp)
-        if isinstance(action, NVVerb):
+        if action is NVVerb:
             action.invoker = actor
         else:
             action = None
+
         return action
 
-    def do_parse(self, input_string):
+    def do_parse(self, input_string: str) -> Union[NVVerb, None]:
         """
         Execute the actual parsing of the command string.  This method
         checks for some simple edge cases before invoking the real parsing
@@ -304,27 +309,27 @@ class NVParser:
         if input_string in SIMPLE_ACTIONS:
             return self.verbs[input_string]
         elif input_string in DIRECTIONS:
-            vb = self.verbs[tokens[0]]
-            vb.target = tokens[0]
-            return vb
+            verb = self.verbs[tokens[0]]
+            verb.target = tokens[0]
+            return verb
 
         # Make it a (mostly) valid English sentence and then hand it over to
         # the real parser.
         input_string = "I " + input_string
         return self.do_hard_parse(input_string)
 
-    def do_help(self, in_str):
+    def do_help(self, input_string: str) -> None:
         """
         Implements the `help` command.  Shows help for a specific verb
         if called with that verb, else shows a summary of all commands.
 
         Args:
-            in_str: the input string to show the help string for.
+            input_string: the input string to show the help string for.
 
         Returns:
             Nothing
         """
-        tokens = in_str.split(" ", maxsplit=2)
+        tokens = input_string.split(" ", maxsplit=2)
         help_word = None
 
         if len(tokens) > 1:
@@ -339,7 +344,7 @@ class NVParser:
             for verb in self.verbs.values():
                 verb.help()
 
-    def do_hard_parse(self, input_string):
+    def do_hard_parse(self, input_string: str) -> Union[NVVerb, None]:
         """
         Invokes the "real" parsing routine for more complex commands.
         This uses NLTK to create a parse tree from the user's input.
@@ -436,7 +441,7 @@ class NVParser:
         retval.bound_item = implement
         return retval
 
-    def error(self, whoopsie: str):
+    def error(self, whoopsie: str) -> None:
         """
         Print an error message if parsing generates an error.
         """
@@ -446,7 +451,7 @@ class NVParser:
         else:
             nv_print(ERROR_STR)
 
-    def rich_error(self, whoopsie: str, which: str, target=None):
+    def rich_error(self, whoopsie: str, which: str, target: Union[any, None] = None) -> None:
         """
         Print a nicer error message if parsing generates an error.
         """
@@ -582,12 +587,12 @@ Spoiler: Your prize is a free download, no strings attached, of the
 Python programming language, which was used to implement this game.
 """
         nv_print(msg)
-        do_quit()
+        do_quit(verb)
     else:
         raise NVGameStateError("arkhtos")
 
 
-def do_xyzzy(*_) -> None:
+def do_xyzzy(_: NVVerb) -> None:
     """Trigger the game's loss condition."""
     nv_print(
         """Your memory serves you well.
@@ -597,9 +602,9 @@ However, you choose poorly.  Goodbye.
 \nYou have died.
 """
     )
-    do_quit()
+    do_quit(_)
 
 
-def do_quit(*_) -> None:
+def do_quit(_: NVVerb) -> None:
     """Quit the game."""
     sys.exit(0)
