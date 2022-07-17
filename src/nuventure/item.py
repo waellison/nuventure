@@ -19,30 +19,30 @@ class NVItem:
     attacking enemies, or unlocking doors.
     """
 
-    def __init__(self, iname: str, dbinfo: dict, world):
+    def __init__(self, internal_name: str, database_info: dict, world):
         """Create a new item.
 
         Args:
-            iname: internal name of the item
-            dbinfo: dict of data from the world JSON
+            internal_name: internal name of the item
+            database_info: dict of data from the world JSON
             world: the world to which this item is bound"""
-        self.internal_name = iname
-        self.friendly_name = dbinfo["friendlyName"]
-        self.look_description = dbinfo["inSceneDescription"]
-        self.long_description = dbinfo["longDescription"]
-        self.take_description = dbinfo["takeDescription"] or None
-        self.use_description = [dbinfo["useDescription"], dbinfo["useAltDescription"]]
+        self.internal_name = internal_name
+        self.friendly_name = database_info["friendlyName"]
+        self.look_description = database_info["inSceneDescription"]
+        self.long_description = database_info["longDescription"]
+        self.take_description = database_info["takeDescription"] or None
+        self.use_description = [database_info["useDescription"], database_info["useAltDescription"]]
 
-        self.location = world.nodes.get(dbinfo["originCell"], None)
+        self.location = world.nodes.get(database_info["originCell"], None)
 
-        if dbinfo["originOwner"]:
-            self.owner = world.actors.get(dbinfo["originOwner"], None)
-            self.owner.inventory[iname] = self
+        if database_info["originOwner"]:
+            self.owner = world.actors.get(database_info["originOwner"], None)
+            self.owner.inventory[internal_name] = self
 
         if self.location:
             self.location.items.append(self)
 
-    def take(self, taker):
+    def take(self, taker) -> None:
         """Take an item from the world and give it to the actor
         taking it.
 
@@ -62,7 +62,7 @@ class NVItem:
             self.location.items.remove(self)
             self.location = None
 
-    def drop(self, giver):
+    def drop(self, giver) -> None:
         """Drop an item back into the world, taking it from the
         actor giving it back to the world.
 
@@ -78,22 +78,22 @@ class NVItem:
         self.location = giver.location
         self.location.items.append(self)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.internal_name
 
-    def _describe(self):
+    def _describe(self) -> str:
         """
         Show the description of the item.
         """
         return self.long_description
 
-    def render(self):
+    def render(self) -> None:
         """
         Print the description of the item to the console.
         """
         nv_print(self._describe())
 
-    def short_render(self):
+    def short_render(self) -> str:
         """
         Show the friendly name of the item.
         """
@@ -105,14 +105,14 @@ class NVLamp(NVItem):
     A Lamp is an item that provides light in dark areas.
     """
 
-    def __init__(self, iname: str, dbinfo: dict, world):
+    def __init__(self, internal_name: str, database_info: dict, world):
         """
         Create a new lamp.  The lit state starts as false.
         """
-        super().__init__(iname, dbinfo, world)
+        super().__init__(internal_name, database_info, world)
         self.lit_state = False
 
-    def use(self):
+    def use(self) -> None:
         """Trigger the lit state of the lamp."""
         if self.lit_state:
             self.lit_state = False
@@ -121,7 +121,7 @@ class NVLamp(NVItem):
             self.lit_state = True
             nv_print(self.use_description[0])
 
-    def is_lit(self):
+    def is_lit(self) -> bool:
         """Return whether the lamp is lit."""
         return self.lit_state
 
@@ -131,20 +131,20 @@ class NVWeapon(NVItem):
     A Weapon is an item that allows the player to harm non-player characters.
     """
 
-    def __init__(self, iname: str, dbinfo: dict, world):
+    def __init__(self, internal_name: str, database_info: dict, world):
         """
         Create a new weapon.
         """
-        super().__init__(iname, dbinfo, world)
+        super().__init__(internal_name, database_info, world)
         try:
-            self.power = dbinfo["power"]
-            self.print_on_use = dbinfo["inducesState"][0]["description"]
+            self.power = database_info["power"]
+            self.print_on_use = database_info["inducesState"][0]["description"]
         except KeyError:
             nv_print(
                 "error: cannot init a weapon without specifying attack power or use string"
             )
 
-    def use(self, other):
+    def use(self, other) -> int:
         """Use the weapon on the specified actor."""
         if not other:
             return -1
@@ -159,15 +159,15 @@ class NVSpellbook(NVItem):
     It is consumed upon use.
     """
 
-    def __init__(self, iname: str, dbinfo: dict, world):
+    def __init__(self, internal_name: str, database_info: dict, world):
         """
         Create a new spellbook.
         """
-        super().__init__(iname, dbinfo, world)
-        self.info = dbinfo
+        super().__init__(internal_name, database_info, world)
+        self.info = database_info
         self.spell = None
 
-    def use(self, user):
+    def use(self, user) -> bool:
         """Confer the spell in the spellbook on the user, if the user does
         not already know it."""
         if self.spell not in user.spells:
