@@ -8,6 +8,7 @@ Copyright (c) 2021 by William Ellison.
 Nuventure is licensed under the terms of the MIT License, furnished
 in the LICENSE file at the root directory of this distribution.
 """
+from typing import Union, Callable
 
 from nuventure import ERROR_STR, nv_print
 from nuventure.errors import (
@@ -35,7 +36,7 @@ class NVGame:
         self.world.add_actor(self.player)
         self.parser = NVParser(path + "/verbs.json")
 
-    def run(self):
+    def run(self) -> None:
         """Run the game by rendering the player's starting location
         and then starting the input loop.
         """
@@ -57,7 +58,7 @@ class NVGame:
         else:
             nv_print(ERROR_STR)
 
-    def _do_input_loop(self):
+    def _do_input_loop(self) -> Union[None, Callable]:
         """Accept input from the user and process it."""
         self.player.location.visited_p = True
         print(" ")
@@ -65,11 +66,11 @@ class NVGame:
         try:
             verb = self.parser.read_command(self.player)
         except NotImplementedError:
-            nv_print("this action is not implemented yet")
+            return nv_print("this action is not implemented yet")
         except (KeyboardInterrupt, EOFError):
-            do_quit()
+            return do_quit(None)
         except NVParseError:
-            return False
+            return None
         else:
             if verb:
                 try:
@@ -84,4 +85,4 @@ class NVGame:
                     return result
             else:
                 self._do_parse_error()
-                return False
+                return None
