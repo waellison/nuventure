@@ -29,27 +29,27 @@ class NVActor:
     def __init__(
         self,
         bound_world,
-        location,
-        iname="PLAYER",
-        name="Adventurer",
-        hp=100,
+        world_node,
+        internal_name="PLAYER",
+        friendly_name="Adventurer",
+        hit_points=100,
         movement_rate=1,
     ):
         """Create a new actor object.
 
         Args:
             bound_world: the world object to which this actor is bound
-            location: the node within the world where this actor is currently located
-            iname: the internal name of this actor (defaults to "PLAYER")
-            name: the name of this actor (defaults to "Adventurer")
-            hp: the amount of hit points to give this character (defaults to 100)
+            world_node: the node within the world where this actor is currently located
+            internal_name: the internal friendly_name of this actor (defaults to "PLAYER")
+            friendly_name: the friendly_name of this actor (defaults to "Adventurer")
+            hit_points: the amount of hit points to give this character (defaults to 100)
             movement_rate: the actor's movement rate (defaults to 1 node per gametic)
         """
-        self.internal_name = iname
-        self.friendly_name = name
+        self.internal_name = internal_name
+        self.friendly_name = friendly_name
         self.bound_world = bound_world
-        self.location = location
-        self.hit_points = hp
+        self.location = world_node
+        self.hit_points = hit_points
         self.inventory = {}
         self.description = None
 
@@ -59,10 +59,10 @@ class NVActor:
         self.movement_rate = movement_rate
 
     def __str__(self):
-        """Returns the actor's name."""
+        """Returns the actor's friendly_name."""
         return self.friendly_name
 
-    def injure(self, amount=5):
+    def injure(self, amount: int = 5) -> bool:
         """Injures an actor, detracting the specified amount of HP.
 
         Arguments:
@@ -73,15 +73,15 @@ class NVActor:
         self.hit_points -= amount
         return self.is_dead()
 
-    def is_dead(self):
+    def is_dead(self) -> bool:
         """Returns whether the actor is dead."""
         return self.hit_points <= 0
 
-    def is_npc(self):
+    def is_npc(self) -> bool:
         """Returns whether the actor is a player character."""
         return self.internal_name != "PLAYER"
 
-    def do_tic(self):
+    def do_tic(self) -> None:
         """Do this actor's tic during the world tic."""
         dbg_print(func_name(), f"doing tic for {self}")
         if self.is_dead():
@@ -90,18 +90,18 @@ class NVActor:
                 del self.bound_world.actors[self.internal_name]
             else:
                 nv_print("You have died.")
-                do_quit()
+                do_quit(None)
         else:
             if self.is_npc():
                 for _ in range(0, self.movement_rate):
                     directions = list(self.location.neighbors.keys())
-                    thisway = random.choice(directions)
-                    movement = self.bound_world.game_instance.parser.verbs[thisway]
+                    this_way = random.choice(directions)
+                    movement = self.bound_world.game_instance.parser.verbs[this_way]
                     movement.invoker = self
-                    movement.target = thisway
+                    movement.target = this_way
                     movement.invoke()
 
-    def move(self, direction):
+    def move(self, direction) -> bool:
         """Attempts to move the actor within the world map.
 
         Args:
@@ -110,22 +110,25 @@ class NVActor:
         Returns:
             True if movement succeeded, False if not, None if the movement verb
             was invalid."""
-        prev_loc = self.location
-        result = self.bound_world.try_move(self, direction)
+        last_location = self.location
+        movement_succeeded_p = self.bound_world.try_move(self, direction)
 
-        if not result:
+        if not movement_succeeded_p:
             raise NVBadArgError(direction, direction)
 
-        if result and not self.is_npc():
-            nv_print(prev_loc.neighbors[direction]["travel_description"])
+        if movement_succeeded_p and not self.is_npc():
+            nv_print(last_location.neighbors[direction]["travel_description"])
             self.location.render()
-        return result
+        return movement_succeeded_p
 
-    def add_item(self, item: NVItem):
+    def add_item(self, item: NVItem) -> bool:
         """Add an item to the player's inventory.
 
         Args:
-            item: the item to add to the inventory"""
+            item: the item to add to the inventory
+
+        Returns:
+            True if successful, False otherwise"""
         if item:
             item.take(self)
             self.inventory[item.internal_name] = item
@@ -133,12 +136,15 @@ class NVActor:
 
         return False
 
-    def drop_item(self, item: NVItem):
+    def drop_item(self, item: NVItem) -> bool:
         """Remove an item from the player's inventory and drop it at the
         current map node.
 
         Args:
-            item: the item to drop"""
+            item: the item to drop
+
+        Returns:
+            True if successful, False otherwise"""
         if item and self.inventory.get(item.internal_name):
             item.drop(self)
             nv_print(
@@ -146,5 +152,4 @@ class NVActor:
             )
             del self.inventory[item.internal_name]
             return True
-
         return False
