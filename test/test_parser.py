@@ -50,7 +50,7 @@ def test_dwim():
 
 
 def test_parser_cmd_not_invocable_by_npc():
-    an_npc = actor.NVActor(game_fixture.world, game_fixture.start_node, iname="SOME_GUY")
+    an_npc = actor.NVActor(game_fixture.world, game_fixture.start_node, internal_name="SOME_GUY")
     with pytest.raises(RuntimeError) as ex:
         test_fixture.read_command(an_npc)
         assert ex.value == "Non-player characters should not invoke interactive commands"

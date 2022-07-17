@@ -10,14 +10,14 @@ game_fixture = NVGame("data")
 actor_fixture = NVActor(
     game_fixture.world,
     game_fixture.start_node,
-    iname="SIDEKICK",
+    internal_name="SIDEKICK",
     name="Alandar",
     hp=50,
     movement_rate=1,
 )
 
 item_fixture = NVLamp(
-    iname="Test Lamp",
+    internal_name="Test Lamp",
     dbinfo={
         "friendlyName": "Test Lamp",
         "inSceneDescription": "It's a lamp.",
@@ -76,6 +76,7 @@ def test_player_move_fail():
     with pytest.raises(NVBadArgError) as ex:
         result = actor_fixture.move("north")
 
+
 def test_item_bestowal():
     result = actor_fixture.add_item(item_fixture)
     assert result
@@ -109,7 +110,7 @@ def test_actor_tic_player_died(capsys):
 
 
 def test_actor_tic_npc_died():
-    test_actor = NVActor(game_fixture.world, game_fixture.start_node, iname="TEST")
+    test_actor = NVActor(game_fixture.world, game_fixture.start_node, internal_name="TEST")
     test_actor.injure(100)
     test_actor.do_tic()
     assert test_actor not in game_fixture.world.actors.values()
