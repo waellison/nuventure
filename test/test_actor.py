@@ -11,14 +11,14 @@ actor_fixture = NVActor(
     game_fixture.world,
     game_fixture.start_node,
     internal_name="SIDEKICK",
-    name="Alandar",
-    hp=50,
+    friendly_name="Alandar",
+    hit_points=50,
     movement_rate=1,
 )
 
 item_fixture = NVLamp(
     internal_name="Test Lamp",
-    dbinfo={
+    database_info={
         "friendlyName": "Test Lamp",
         "inSceneDescription": "It's a lamp.",
         "longDescription": "It's a lamp.",
@@ -37,7 +37,7 @@ def test_actor_stringize():
 
 
 def test_injure_actor():
-    test_dummy = NVActor(None, None, hp=100)
+    test_dummy = NVActor(None, None, hit_points=100)
     test_dummy.injure(10)
     assert test_dummy.hit_points == 90
 
