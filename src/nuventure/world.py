@@ -50,11 +50,11 @@ class NVWorldNode:
                 "travel_description": neighbor["travelDescription"],
             }
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Returns the node's internal name."""
         return self.internal_name
 
-    def render(self, long_p=False, stateful_p=False) -> None:
+    def render(self, long_p: bool = False, stateful_p: bool = False) -> None:
         """Print an appropriate description of the given node.
 
         If the node is marked as visited, then we want the brief description,
@@ -81,8 +81,8 @@ class NVWorldNode:
             for item in self.items:
                 nv_print(item.look_description)
 
-    def describe(self, length="long", stateful_p=False):
-        """Prints a description of the given node.
+    def describe(self, length: str = "long", stateful_p: bool = False) -> str:
+        """Returns a description of the given node.
 
         Nodes have either two or four descriptions: a long description to be
         printed upon invoking the "look" command or visiting the node for the
@@ -99,6 +99,9 @@ class NVWorldNode:
             stateful_p: whether this is the description to be printed
                 after the required state of this node is triggered
                 (defaults to False)
+
+        Returns:
+            The selected description of the node as a string.
         """
         if stateful_p is True:
             return self.descriptions[f"{length}_stateful"]
